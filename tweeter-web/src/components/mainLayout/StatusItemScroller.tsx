@@ -10,7 +10,17 @@ import StatusItem from "../statusItem/StatusItem";
 
 export const PAGE_SIZE = 10;
 
-const StoryScroller = () => {
+interface Props {
+  itemDescription: string;
+  loadMore: (
+    authToken: AuthToken,
+    userAlias: string,
+    pageSize: number,
+    lastItem: Status | null
+  ) => Promise<[Status[], boolean]>;
+}
+
+const StatusItemScroller = (props: Props) => {
   const { displayErrorMessage } = useToastListener();
   const [items, setItems] = useState<Status[]>([]);
   const [newItems, setNewItems] = useState<Status[]>([]);
@@ -51,25 +61,15 @@ const StoryScroller = () => {
 
   const loadMoreItems = async () => {
     try {
-      const [newItems, hasMore] = await loadMoreStoryItems(authToken!, displayedUser!.alias, PAGE_SIZE, lastItem);
+      const [newItems, hasMore] = await props.loadMore(authToken!, displayedUser!.alias, PAGE_SIZE, lastItem);
 
       setHasMoreItems(hasMore);
       setLastItem(newItems[newItems.length - 1]);
       addItems(newItems);
       setChangedDisplayedUser(false);
     } catch (error) {
-      displayErrorMessage(`Failed to load story items because of exception: ${error}`);
+      displayErrorMessage(`Failed to load ${props.itemDescription} items because of exception: ${error}`);
     }
-  };
-
-  const loadMoreStoryItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
   };
 
   return (
@@ -91,4 +91,4 @@ const StoryScroller = () => {
   );
 };
 
-export default StoryScroller;
+export default StatusItemScroller;
