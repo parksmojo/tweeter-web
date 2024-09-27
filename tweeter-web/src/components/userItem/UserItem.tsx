@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { useContext } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
-import useUserNavigation from "../userInfo/userNavigationHook";
+import useUserNavigation from "../userInfo/UserNavigationHook";
 
 interface Props {
   value: User;

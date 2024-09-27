@@ -4,7 +4,7 @@ import { AuthToken, User, FakeData, Status } from "tweeter-shared";
 import { useContext } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
 import { UserInfoContext } from "../userInfo/UserInfoProvider";
-import useUserNavigation from "../userInfo/userNavigationHook";
+import useUserNavigation from "../userInfo/UserNavigationHook";
 
 interface Props {
   item: Status;
