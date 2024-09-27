@@ -1,15 +1,13 @@
 import "./PostStatus.css";
 import { useState } from "react";
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { AuthToken, Status } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfo from "../userInfo/UserInfoHook";
 
 const PostStatus = () => {
-  const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
-    useToastListener();
+  const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } = useToastListener();
 
-  const { currentUser, authToken } = useContext(UserInfoContext);
+  const { currentUser, authToken } = useUserInfo();
   const [post, setPost] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,19 +25,14 @@ const PostStatus = () => {
       setPost("");
       displayInfoMessage("Status posted!", 2000);
     } catch (error) {
-      displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to post the status because of exception: ${error}`);
     } finally {
       clearLastInfoMessage();
       setIsLoading(false);
     }
   };
 
-  const postStatus = async (
-    authToken: AuthToken,
-    newStatus: Status
-  ): Promise<void> => {
+  const postStatus = async (authToken: AuthToken, newStatus: Status): Promise<void> => {
     // Pause so we can see the logging out message. Remove when connected to the server
     await new Promise((f) => setTimeout(f, 2000));
 
@@ -80,11 +73,7 @@ const PostStatus = () => {
             onClick={(event) => submitPost(event)}
           >
             {isLoading ? (
-              <span
-                className="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             ) : (
               <div>Post Status</div>
             )}

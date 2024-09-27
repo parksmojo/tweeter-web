@@ -1,10 +1,9 @@
 import "./UserInfo.css";
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfo from "./UserInfoHook";
 
 const UserInfo = () => {
   const [isFollower, setIsFollower] = useState(false);
@@ -12,11 +11,9 @@ const UserInfo = () => {
   const [followerCount, setFollowerCount] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
-    useToastListener();
+  const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } = useToastListener();
 
-  const { currentUser, authToken, displayedUser, setDisplayedUser } =
-    useContext(UserInfoContext);
+  const { currentUser, authToken, displayedUser, setDisplayedUser } = useUserInfo();
 
   if (!displayedUser) {
     setDisplayedUser(currentUser!);
@@ -28,73 +25,45 @@ const UserInfo = () => {
     setNumbFollowers(authToken!, displayedUser!);
   }, [displayedUser]);
 
-  const setIsFollowerStatus = async (
-    authToken: AuthToken,
-    currentUser: User,
-    displayedUser: User
-  ) => {
+  const setIsFollowerStatus = async (authToken: AuthToken, currentUser: User, displayedUser: User) => {
     try {
       if (currentUser === displayedUser) {
         setIsFollower(false);
       } else {
-        setIsFollower(
-          await getIsFollowerStatus(authToken!, currentUser!, displayedUser!)
-        );
+        setIsFollower(await getIsFollowerStatus(authToken!, currentUser!, displayedUser!));
       }
     } catch (error) {
-      displayErrorMessage(
-        `Failed to determine follower status because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to determine follower status because of exception: ${error}`);
     }
   };
 
-  const getIsFollowerStatus = async (
-    authToken: AuthToken,
-    user: User,
-    selectedUser: User
-  ): Promise<boolean> => {
+  const getIsFollowerStatus = async (authToken: AuthToken, user: User, selectedUser: User): Promise<boolean> => {
     // TODO: Replace with the result of calling server
     return FakeData.instance.isFollower();
   };
 
-  const setNumbFollowees = async (
-    authToken: AuthToken,
-    displayedUser: User
-  ) => {
+  const setNumbFollowees = async (authToken: AuthToken, displayedUser: User) => {
     try {
       setFolloweeCount(await getFolloweeCount(authToken, displayedUser));
     } catch (error) {
-      displayErrorMessage(
-        `Failed to get followees count because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to get followees count because of exception: ${error}`);
     }
   };
 
-  const getFolloweeCount = async (
-    authToken: AuthToken,
-    user: User
-  ): Promise<number> => {
+  const getFolloweeCount = async (authToken: AuthToken, user: User): Promise<number> => {
     // TODO: Replace with the result of calling server
     return FakeData.instance.getFolloweeCount(user.alias);
   };
 
-  const setNumbFollowers = async (
-    authToken: AuthToken,
-    displayedUser: User
-  ) => {
+  const setNumbFollowers = async (authToken: AuthToken, displayedUser: User) => {
     try {
       setFollowerCount(await getFollowerCount(authToken, displayedUser));
     } catch (error) {
-      displayErrorMessage(
-        `Failed to get followers count because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to get followers count because of exception: ${error}`);
     }
   };
 
-  const getFollowerCount = async (
-    authToken: AuthToken,
-    user: User
-  ): Promise<number> => {
+  const getFollowerCount = async (authToken: AuthToken, user: User): Promise<number> => {
     // TODO: Replace with the result of calling server
     return FakeData.instance.getFollowerCount(user.alias);
   };
@@ -104,27 +73,20 @@ const UserInfo = () => {
     setDisplayedUser(currentUser!);
   };
 
-  const followDisplayedUser = async (
-    event: React.MouseEvent
-  ): Promise<void> => {
+  const followDisplayedUser = async (event: React.MouseEvent): Promise<void> => {
     event.preventDefault();
 
     try {
       setIsLoading(true);
       displayInfoMessage(`Following ${displayedUser!.name}...`, 0);
 
-      const [followerCount, followeeCount] = await follow(
-        authToken!,
-        displayedUser!
-      );
+      const [followerCount, followeeCount] = await follow(authToken!, displayedUser!);
 
       setIsFollower(true);
       setFollowerCount(followerCount);
       setFolloweeCount(followeeCount);
     } catch (error) {
-      displayErrorMessage(
-        `Failed to follow user because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to follow user because of exception: ${error}`);
     } finally {
       clearLastInfoMessage();
       setIsLoading(false);
@@ -146,30 +108,20 @@ const UserInfo = () => {
     return [followerCount, followeeCount];
   };
 
-  const unfollowDisplayedUser = async (
-    event: React.MouseEvent
-  ): Promise<void> => {
+  const unfollowDisplayedUser = async (event: React.MouseEvent): Promise<void> => {
     event.preventDefault();
 
     try {
       setIsLoading(true);
-      displayInfoMessage(
-        `Unfollowing ${displayedUser!.name}...`,
-        0
-      );
+      displayInfoMessage(`Unfollowing ${displayedUser!.name}...`, 0);
 
-      const [followerCount, followeeCount] = await unfollow(
-        authToken!,
-        displayedUser!
-      );
+      const [followerCount, followeeCount] = await unfollow(authToken!, displayedUser!);
 
       setIsFollower(false);
       setFollowerCount(followerCount);
       setFolloweeCount(followeeCount);
     } catch (error) {
-      displayErrorMessage(
-        `Failed to unfollow user because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to unfollow user because of exception: ${error}`);
     } finally {
       clearLastInfoMessage();
       setIsLoading(false);
@@ -199,21 +151,13 @@ const UserInfo = () => {
         <div className="container">
           <div className="row">
             <div className="col-auto p-3">
-              <img
-                src={displayedUser.imageUrl}
-                className="img-fluid"
-                width="100"
-                alt="Posting user"
-              />
+              <img src={displayedUser.imageUrl} className="img-fluid" width="100" alt="Posting user" />
             </div>
             <div className="col p-3">
               {displayedUser !== currentUser && (
                 <p id="returnToLoggedInUser">
                   Return to{" "}
-                  <Link
-                    to={""}
-                    onClick={(event) => switchToLoggedInUser(event)}
-                  >
+                  <Link to={""} onClick={(event) => switchToLoggedInUser(event)}>
                     logged in user
                   </Link>
                 </p>
@@ -241,11 +185,7 @@ const UserInfo = () => {
                       onClick={(event) => unfollowDisplayedUser(event)}
                     >
                       {isLoading ? (
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       ) : (
                         <div>Unfollow</div>
                       )}
@@ -259,11 +199,7 @@ const UserInfo = () => {
                       onClick={(event) => followDisplayedUser(event)}
                     >
                       {isLoading ? (
-                        <span
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       ) : (
                         <div>Follow</div>
                       )}

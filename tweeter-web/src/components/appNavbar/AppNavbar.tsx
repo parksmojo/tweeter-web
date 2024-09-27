@@ -1,17 +1,15 @@
 import "./AppNavbar.css";
-import { useContext } from "react";
-import { UserInfoContext } from "../userInfo/UserInfoProvider";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, useLocation } from "react-router-dom";
 import Image from "react-bootstrap/Image";
 import { AuthToken } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
+import useUserInfo from "../userInfo/UserInfoHook";
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { authToken, clearUserInfo } = useContext(UserInfoContext);
-  const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } =
-    useToastListener();
+  const { authToken, clearUserInfo } = useUserInfo();
+  const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } = useToastListener();
 
   const logOut = async () => {
     displayInfoMessage("Logging Out...", 0);
@@ -22,9 +20,7 @@ const AppNavbar = () => {
       clearLastInfoMessage();
       clearUserInfo();
     } catch (error) {
-      displayErrorMessage(
-        `Failed to log user out because of exception: ${error}`
-      );
+      displayErrorMessage(`Failed to log user out because of exception: ${error}`);
     }
   };
 
@@ -34,13 +30,7 @@ const AppNavbar = () => {
   };
 
   return (
-    <Navbar
-      collapseOnSelect
-      className="mb-4"
-      expand="md"
-      bg="primary"
-      variant="dark"
-    >
+    <Navbar collapseOnSelect className="mb-4" expand="md" bg="primary" variant="dark">
       <Container>
         <Navbar.Brand>
           <div className="d-flex flex-row">
