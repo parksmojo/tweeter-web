@@ -27,6 +27,12 @@ const Login = (props: Props) => {
     return !alias || !password;
   };
 
+  const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
+      doLogin();
+    }
+  };
+
   const doLogin = async () => {
     try {
       setIsLoading(true);
@@ -59,14 +65,7 @@ const Login = (props: Props) => {
   };
 
   const inputFieldGenerator = () => {
-    return (
-      <AuthenticationField
-        onKeyFunc={doLogin}
-        checkSubmitButtonStatus={checkSubmitButtonStatus}
-        setAlias={setAlias}
-        setPassword={setPassword}
-      />
-    );
+    return <AuthenticationField onKeyFunc={loginOnEnter} setAlias={setAlias} setPassword={setPassword} />;
   };
 
   const switchAuthenticationMethodGenerator = () => {
