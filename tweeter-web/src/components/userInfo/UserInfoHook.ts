@@ -11,11 +11,6 @@ interface UserInfo {
   setDisplayedUser: (user: User) => void;
 }
 
-const useUserInfo = (): UserInfo => {
-  const { currentUser, authToken, displayedUser, updateUserInfo, clearUserInfo, setDisplayedUser } =
-    useContext(UserInfoContext);
-
-  return { currentUser, authToken, displayedUser, updateUserInfo, clearUserInfo, setDisplayedUser };
-};
+const useUserInfo: UserInfo = useContext(UserInfoContext);
 
 export default useUserInfo;

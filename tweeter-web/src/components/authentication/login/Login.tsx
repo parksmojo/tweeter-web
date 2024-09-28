@@ -19,7 +19,7 @@ const Login = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useUserInfo();
+  const { updateUserInfo } = useUserInfo;
   const { displayErrorMessage } = useToastListener();
 
   const checkSubmitButtonStatus = (): boolean => {

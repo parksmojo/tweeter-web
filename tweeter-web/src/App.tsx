@@ -10,7 +10,7 @@ import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import useUserInfo from "./components/userInfo/UserInfoHook";
 
 const App = () => {
-  const { currentUser, authToken } = useUserInfo();
+  const { currentUser, authToken } = useUserInfo;
 
   const isAuthenticated = (): boolean => {
     return !!currentUser && !!authToken;
