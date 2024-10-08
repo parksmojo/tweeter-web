@@ -8,7 +8,7 @@ interface Navigation {
 
 const useUserNavigation = (): Navigation => {
   const { displayErrorMessage } = useToastListener();
-  const { setDisplayedUser, currentUser, authToken } = useUserInfo;
+  const { setDisplayedUser, currentUser, authToken } = useUserInfo();
 
   const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
     event.preventDefault();

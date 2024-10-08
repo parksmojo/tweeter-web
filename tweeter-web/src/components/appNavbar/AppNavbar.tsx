@@ -8,7 +8,7 @@ import useUserInfo from "../userInfo/UserInfoHook";
 
 const AppNavbar = () => {
   const location = useLocation();
-  const { authToken, clearUserInfo } = useUserInfo;
+  const { authToken, clearUserInfo } = useUserInfo();
   const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } = useToastListener();
 
   const logOut = async () => {

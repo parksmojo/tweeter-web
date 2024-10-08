@@ -11,9 +11,12 @@ import useUserInfo from "./components/userInfo/UserInfoHook";
 import { UserItemView } from "./presenters/UserItemPresenter";
 import { FolloweePresenter } from "./presenters/FolloweePresenter";
 import { FollowerPresenter } from "./presenters/FollowerPresenter";
+import { StatusItemView } from "./presenters/StatusItemPresenter";
+import { FeedPresenter } from "./presenters/FeedPresenter";
+import { StoryPresenter } from "./presenters/StoryPresenter";
 
 const App = () => {
-  const { currentUser, authToken } = useUserInfo;
+  const { currentUser, authToken } = useUserInfo();
 
   const isAuthenticated = (): boolean => {
     return !!currentUser && !!authToken;
@@ -32,8 +35,14 @@ const AuthenticatedRoutes = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Navigate to="/feed" />} />
-        {/* <Route path="feed" element={<StatusItemScroller itemDescription={"feed"} loadMore={loadMoreFeedItems} />} />
-        <Route path="story" element={<StatusItemScroller itemDescription={"story"} loadMore={loadMoreStoryItems} />} /> */}
+        <Route
+          path="feed"
+          element={<StatusItemScroller presenterGenerator={(view: StatusItemView) => new FeedPresenter(view)} />}
+        />
+        <Route
+          path="story"
+          element={<StatusItemScroller presenterGenerator={(view: StatusItemView) => new StoryPresenter(view)} />}
+        />
         <Route
           path="followees"
           element={

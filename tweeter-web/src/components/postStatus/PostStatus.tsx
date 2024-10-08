@@ -7,7 +7,7 @@ import useUserInfo from "../userInfo/UserInfoHook";
 const PostStatus = () => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } = useToastListener();
 
-  const { currentUser, authToken } = useUserInfo;
+  const { currentUser, authToken } = useUserInfo();
   const [post, setPost] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

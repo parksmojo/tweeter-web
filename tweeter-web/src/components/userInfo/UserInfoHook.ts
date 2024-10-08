@@ -11,6 +11,6 @@ interface UserInfo {
   setDisplayedUser: (user: User) => void;
 }
 
-const useUserInfo: UserInfo = useContext(UserInfoContext);
+const useUserInfo = (): UserInfo => useContext(UserInfoContext);
 
 export default useUserInfo;

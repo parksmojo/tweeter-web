@@ -16,7 +16,7 @@ const UserItemScroller = (props: Props) => {
   const [newItems, setNewItems] = useState<User[]>([]);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-  const { displayedUser, authToken } = useUserInfo;
+  const { displayedUser, authToken } = useUserInfo();
 
   // Initialize the component whenever the displayed user changes
   useEffect(() => {

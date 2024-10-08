@@ -13,7 +13,7 @@ const UserInfo = () => {
 
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } = useToastListener();
 
-  const { currentUser, authToken, displayedUser, setDisplayedUser } = useUserInfo;
+  const { currentUser, authToken, displayedUser, setDisplayedUser } = useUserInfo();
 
   if (!displayedUser) {
     setDisplayedUser(currentUser!);
