@@ -1,4 +1,4 @@
-import { AuthToken, FakeData, Status, User, Type } from "tweeter-shared";
+import { AuthToken, Status, User, Type } from "tweeter-shared";
 import { Link } from "react-router-dom";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserNavigation from "../userInfo/UserNavigationHook";
