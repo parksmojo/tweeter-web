@@ -2,8 +2,8 @@ import { useState } from "react";
 
 interface Props {
   onKeyFunc: (event: React.KeyboardEvent<HTMLElement>) => void;
-  setAlias: React.Dispatch<React.SetStateAction<string>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
+  setAlias: (value: string) => void;
+  setPassword: (value: string) => void;
 }
 
 const AuthenticationField = (props: Props) => {

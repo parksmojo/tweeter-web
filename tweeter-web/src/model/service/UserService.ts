@@ -1,4 +1,5 @@
 import { AuthToken, User, FakeData } from "tweeter-shared";
+import { Buffer } from "buffer";
 
 export class UserService {
   public async extractAlias(value: string): Promise<string> {
@@ -24,5 +25,17 @@ export class UserService {
   public async getFollowerCount(authToken: AuthToken, user: User): Promise<number> {
     // TODO: Replace with the result of calling server
     return FakeData.instance.getFollowerCount(user.alias);
+  }
+
+  public async login(alias: string, password: string): Promise<[User, AuthToken]> {
+    console.log(`Successfully logging in ${alias}`);
+    // TODO: Replace with the result of calling the server
+    const user = FakeData.instance.firstUser;
+
+    if (user === null) {
+      throw new Error("Invalid alias or password");
+    }
+
+    return [user, FakeData.instance.authToken];
   }
 }

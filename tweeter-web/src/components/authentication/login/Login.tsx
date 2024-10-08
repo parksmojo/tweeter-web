@@ -7,6 +7,7 @@ import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationField from "../AuthenticationField";
 import useUserInfo from "../../userInfo/UserInfoHook";
+import { LoginPresenter, LoginView } from "../../../presenters/userItemPresenters/LoginPresenter";
 
 interface Props {
   originalUrl?: string;
@@ -22,49 +23,25 @@ const Login = (props: Props) => {
   const { updateUserInfo } = useUserInfo();
   const { displayErrorMessage } = useToastListener();
 
-  const checkSubmitButtonStatus = (): boolean => {
-    return !alias || !password;
+  const listener: LoginView = {
+    displayErrorMessage,
+    setIsLoading,
+    updateUserInfo,
+    navigate,
   };
 
-  const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
-      doLogin();
-    }
-  };
-
-  const doLogin = async () => {
-    try {
-      setIsLoading(true);
-
-      const [user, authToken] = await login(alias, password);
-
-      updateUserInfo(user, user, authToken, rememberMe);
-
-      if (!!props.originalUrl) {
-        navigate(props.originalUrl);
-      } else {
-        navigate("/");
-      }
-    } catch (error) {
-      displayErrorMessage(`Failed to log user in because of exception: ${error}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async (alias: string, password: string): Promise<[User, AuthToken]> => {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user, FakeData.instance.authToken];
-  };
+  const [presenter] = useState(new LoginPresenter(listener));
 
   const inputFieldGenerator = () => {
-    return <AuthenticationField onKeyFunc={loginOnEnter} setAlias={setAlias} setPassword={setPassword} />;
+    return (
+      <AuthenticationField
+        onKeyFunc={(event: React.KeyboardEvent<HTMLElement>) =>
+          presenter.loginOnEnter(event, alias, password, rememberMe, props.originalUrl!)
+        }
+        setAlias={setAlias}
+        setPassword={setPassword}
+      />
+    );
   };
 
   const switchAuthenticationMethodGenerator = () => {
@@ -83,9 +60,9 @@ const Login = (props: Props) => {
       inputFieldGenerator={inputFieldGenerator}
       switchAuthenticationMethodGenerator={switchAuthenticationMethodGenerator}
       setRememberMe={setRememberMe}
-      submitButtonDisabled={checkSubmitButtonStatus}
+      submitButtonDisabled={() => presenter.checkSubmitButtonStatus(alias, password)}
       isLoading={isLoading}
-      submit={doLogin}
+      submit={() => presenter.doLogin(alias, password, rememberMe, props.originalUrl!)}
     />
   );
 };
