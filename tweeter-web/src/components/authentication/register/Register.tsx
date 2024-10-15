@@ -35,18 +35,14 @@ const Register = () => {
 
   const [presenter] = useState(new RegisterPresenter(listener));
 
+  const checkSubmitButtonStatus = (): boolean => {
+    return !firstName || !lastName || !alias || !password || !imageUrl || !imageFileExtension;
+  };
+
   const registerOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
-    presenter.registerOnEnter(
-      event,
-      firstName,
-      lastName,
-      alias,
-      password,
-      imageUrl,
-      imageBytes,
-      imageFileExtension,
-      rememberMe
-    );
+    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
+      presenter.doRegister(firstName, lastName, alias, password, imageBytes, imageFileExtension, rememberMe);
+    }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,9 +109,7 @@ const Register = () => {
       inputFieldGenerator={inputFieldGenerator}
       switchAuthenticationMethodGenerator={switchAuthenticationMethodGenerator}
       setRememberMe={setRememberMe}
-      submitButtonDisabled={() =>
-        presenter.checkSubmitButtonStatus(firstName, lastName, alias, password, imageUrl, imageFileExtension)
-      }
+      submitButtonDisabled={checkSubmitButtonStatus}
       isLoading={isLoading}
       submit={() =>
         presenter.doRegister(firstName, lastName, alias, password, imageBytes, imageFileExtension, rememberMe)

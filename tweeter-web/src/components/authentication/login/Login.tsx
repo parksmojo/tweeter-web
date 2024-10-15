@@ -31,16 +31,18 @@ const Login = (props: Props) => {
 
   const [presenter] = useState(new LoginPresenter(listener));
 
+  const checkSubmitButtonStatus = (): boolean => {
+    return !alias || !password;
+  };
+
+  const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
+      presenter.doLogin(alias, password, rememberMe, props.originalUrl!);
+    }
+  };
+
   const inputFieldGenerator = () => {
-    return (
-      <AuthenticationField
-        onKeyFunc={(event: React.KeyboardEvent<HTMLElement>) =>
-          presenter.loginOnEnter(event, alias, password, rememberMe, props.originalUrl!)
-        }
-        setAlias={setAlias}
-        setPassword={setPassword}
-      />
-    );
+    return <AuthenticationField onKeyFunc={loginOnEnter} setAlias={setAlias} setPassword={setPassword} />;
   };
 
   const switchAuthenticationMethodGenerator = () => {
@@ -59,7 +61,7 @@ const Login = (props: Props) => {
       inputFieldGenerator={inputFieldGenerator}
       switchAuthenticationMethodGenerator={switchAuthenticationMethodGenerator}
       setRememberMe={setRememberMe}
-      submitButtonDisabled={() => presenter.checkSubmitButtonStatus(alias, password)}
+      submitButtonDisabled={checkSubmitButtonStatus}
       isLoading={isLoading}
       submit={() => presenter.doLogin(alias, password, rememberMe, props.originalUrl!)}
     />

@@ -22,36 +22,6 @@ export class RegisterPresenter {
     this.userService = new UserService();
   }
 
-  public checkSubmitButtonStatus(
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    imageUrl: string,
-    imageFileExtension: string
-  ): boolean {
-    return !firstName || !lastName || !alias || !password || !imageUrl || !imageFileExtension;
-  }
-
-  public registerOnEnter(
-    event: React.KeyboardEvent<HTMLElement>,
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    imageUrl: string,
-    imageBytes: Uint8Array,
-    imageFileExtension: string,
-    rememberMe: boolean
-  ) {
-    if (
-      event.key == "Enter" &&
-      !this.checkSubmitButtonStatus(firstName, lastName, alias, password, imageUrl, imageFileExtension)
-    ) {
-      this.doRegister(firstName, lastName, alias, password, imageBytes, imageFileExtension, rememberMe);
-    }
-  }
-
   public async doRegister(
     firstName: string,
     lastName: string,
