@@ -12,6 +12,10 @@ const PostStatus = () => {
   const [post, setPost] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const checkButtonStatus = () => {
+    return !post.trim() || !authToken || !currentUser;
+  };
+
   const listener: PostStatusView = {
     setIsLoading,
     displayInfoMessage,
@@ -41,7 +45,7 @@ const PostStatus = () => {
             id="postStatusButton"
             className="btn btn-md btn-primary me-1"
             type="button"
-            disabled={presenter.checkButtonStatus(post, authToken!, currentUser!)}
+            disabled={checkButtonStatus()}
             style={{ width: "8em" }}
             onClick={(event) => presenter.submitPost(event, post, currentUser!, authToken!)}
           >
@@ -55,7 +59,7 @@ const PostStatus = () => {
             id="clearStatusButton"
             className="btn btn-md btn-secondary"
             type="button"
-            disabled={presenter.checkButtonStatus(post, authToken!, currentUser!)}
+            disabled={checkButtonStatus()}
             onClick={(event) => presenter.clearPost(event)}
           >
             Clear
