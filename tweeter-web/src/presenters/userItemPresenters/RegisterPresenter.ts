@@ -1,26 +1,13 @@
-import { To, NavigateOptions } from "react-router-dom";
-import { UserService } from "../../model/service/UserService";
-import { User, AuthToken } from "tweeter-shared";
 import { Buffer } from "buffer";
-import { Presenter, View } from "../Presenter";
+import { AuthPresenter, AuthView } from "../AuthPresenter";
 
-export interface RegisterView extends View {
-  setIsLoading: (value: boolean) => void;
-  navigate: (to: To, options?: NavigateOptions) => void;
-  updateUserInfo: (currentUser: User, displayedUser: User | null, authToken: AuthToken, remember: boolean) => void;
+export interface RegisterView extends AuthView {
   setImageUrl: (value: string) => void;
   setImageBytes: (value: Uint8Array) => void;
   setImageFileExtension: (value: string) => void;
 }
 
-export class RegisterPresenter extends Presenter<RegisterView> {
-  private userService: UserService;
-
-  public constructor(view: RegisterView) {
-    super(view);
-    this.userService = new UserService();
-  }
-
+export class RegisterPresenter extends AuthPresenter<RegisterView> {
   public async doRegister(
     firstName: string,
     lastName: string,
@@ -30,25 +17,11 @@ export class RegisterPresenter extends Presenter<RegisterView> {
     imageFileExtension: string,
     rememberMe: boolean
   ) {
-    try {
-      this.view.setIsLoading(true);
-
-      const [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
-
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-      this.view.navigate("/");
-    } catch (error) {
-      this.view.displayErrorMessage(`Failed to register user because of exception: ${error}`);
-    } finally {
-      this.view.setIsLoading(false);
-    }
+    await this.tryAuthAction(
+      "register user",
+      () => this.userService.register(firstName, lastName, alias, password, imageBytes, imageFileExtension),
+      rememberMe
+    );
   }
 
   public handleImageFile(file: File | undefined) {
