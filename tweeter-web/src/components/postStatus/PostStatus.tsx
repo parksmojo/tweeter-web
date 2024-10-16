@@ -16,6 +16,11 @@ const PostStatus = () => {
     return !post.trim() || !authToken || !currentUser;
   };
 
+  const clearPost = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setPost("");
+  };
+
   const listener: PostStatusView = {
     setIsLoading,
     displayInfoMessage,
@@ -60,7 +65,7 @@ const PostStatus = () => {
             className="btn btn-md btn-secondary"
             type="button"
             disabled={checkButtonStatus()}
-            onClick={(event) => presenter.clearPost(event)}
+            onClick={clearPost}
           >
             Clear
           </button>
