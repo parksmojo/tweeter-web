@@ -1,20 +1,18 @@
-import { AuthToken, User } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import UserItem from "../userItem/UserItem";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-import { UserItemPresenter } from "../../presenters/userItemPresenters/UserItemPresenter";
-import { ItemView } from "../../presenters/ItemPresenter";
+import { ItemPresenter, ItemView } from "../../presenters/ItemPresenter";
 
-interface Props {
-  presenterGenerator: (view: ItemView<User>) => UserItemPresenter;
+interface Props<T, S> {
+  presenterGenerator: (view: ItemView<T>) => ItemPresenter<T, S>;
+  itemComponentGenerator: (value: T) => JSX.Element;
 }
 
-const UserItemScroller = (props: Props) => {
+const ItemScroller = <T, S>(props: Props<T, S>) => {
   const { displayErrorMessage } = useToastListener();
-  const [items, setItems] = useState<User[]>([]);
-  const [newItems, setNewItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
+  const [newItems, setNewItems] = useState<T[]>([]);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
   const { displayedUser, authToken } = useUserInfo();
@@ -45,8 +43,8 @@ const UserItemScroller = (props: Props) => {
     presenter.reset();
   };
 
-  const listener: ItemView<User> = {
-    addItems: (newItems: User[]) => setNewItems(newItems),
+  const listener: ItemView<T> = {
+    addItems: (newItems: T[]) => setNewItems(newItems),
     displayErrorMessage: displayErrorMessage,
   };
 
@@ -68,7 +66,7 @@ const UserItemScroller = (props: Props) => {
       >
         {items.map((item, index) => (
           <div key={index} className="row mb-3 mx-0 px-0 border rounded bg-white">
-            <UserItem value={item} />
+            {props.itemComponentGenerator(item)}
           </div>
         ))}
       </InfiniteScroll>
@@ -76,4 +74,4 @@ const UserItemScroller = (props: Props) => {
   );
 };
 
-export default UserItemScroller;
+export default ItemScroller;
