@@ -1,42 +1,14 @@
-import { AuthToken, User } from "tweeter-shared";
+import { User } from "tweeter-shared";
+import { View } from "../Presenter";
+import { ItemPresenter } from "../ItemPresenter";
+import { FollowService } from "../../model/service/FollowService";
 
-export interface UserItemView {
+export interface UserItemView extends View {
   addItems: (newItems: User[]) => void;
-  displayErrorMessage: (message: string) => void;
 }
 
-export abstract class UserItemPresenter {
-  private _view: UserItemView;
-
-  private _hasMoreItems = true;
-  private _lastItem: User | null = null;
-
-  public constructor(view: UserItemView) {
-    this._view = view;
+export abstract class UserItemPresenter extends ItemPresenter<User, FollowService> {
+  protected createService(): FollowService {
+    return new FollowService();
   }
-
-  protected get view() {
-    return this._view;
-  }
-
-  public get hasMoreItems() {
-    return this._hasMoreItems;
-  }
-  protected set hasMoreItems(value: boolean) {
-    this._hasMoreItems = value;
-  }
-
-  protected get lastItem() {
-    return this._lastItem;
-  }
-  protected set lastItem(value: User | null) {
-    this._lastItem = value;
-  }
-
-  reset() {
-    this.lastItem = null;
-    this._hasMoreItems = true;
-  }
-
-  public abstract loadMoreItems(authToken: AuthToken, userAlias: string): void;
 }
