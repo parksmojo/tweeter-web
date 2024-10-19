@@ -1,11 +1,10 @@
 import "./AppNavbar.css";
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { NavLink, useLocation, useSearchParams } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import Image from "react-bootstrap/Image";
-import { AuthToken } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-import { LogoutPresenter, LogoutView } from "../../presenters/userItemPresenters/LogoutPresenter";
+import { NavbarPresenter, NavbarView } from "../../presenters/userItemPresenters/NavbarPresenter";
 import { useState } from "react";
 
 const AppNavbar = () => {
@@ -13,14 +12,14 @@ const AppNavbar = () => {
   const { authToken, clearUserInfo } = useUserInfo();
   const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } = useToastListener();
 
-  const listener: LogoutView = {
+  const listener: NavbarView = {
     displayErrorMessage,
     displayInfoMessage,
     clearLastInfoMessage,
     clearUserInfo,
   };
 
-  const [presenter] = useState(new LogoutPresenter(listener));
+  const [presenter] = useState(new NavbarPresenter(listener));
 
   return (
     <Navbar collapseOnSelect className="mb-4" expand="md" bg="primary" variant="dark">
