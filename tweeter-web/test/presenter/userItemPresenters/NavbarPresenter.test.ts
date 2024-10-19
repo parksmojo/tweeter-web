@@ -4,8 +4,8 @@ import { anything, instance, mock, spy, verify, when } from "ts-mockito";
 import { UserService } from "../../../src/model/service/UserService";
 
 describe("NavbarPresenter", () => {
-  let mockNavbarView: NavbarView;
   let navbarPresenter: NavbarPresenter;
+  let mockNavbarView: NavbarView;
   let mockUserService: UserService;
 
   const authToken = new AuthToken("abc123", Date.now());

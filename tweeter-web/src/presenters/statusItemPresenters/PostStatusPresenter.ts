@@ -8,16 +8,18 @@ export interface PostStatusView extends MessageView {
 }
 
 export class PostStatusPresenter extends Presenter<PostStatusView> {
-  private statusService: StatusService;
+  private _statusService: StatusService;
 
   public constructor(view: PostStatusView) {
     super(view);
-    this.statusService = new StatusService();
+    this._statusService = new StatusService();
   }
 
-  public async submitPost(event: React.MouseEvent, post: string, currentUser: User, authToken: AuthToken) {
-    event.preventDefault();
+  public get statusService() {
+    return this._statusService;
+  }
 
+  public async submitPost(post: string, currentUser: User, authToken: AuthToken) {
     try {
       this.view.setIsLoading(true);
       this.view.displayInfoMessage("Posting status...", 0);
@@ -29,7 +31,7 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
       this.view.setPost("");
       this.view.displayInfoMessage("Status posted!", 2000);
     } catch (error) {
-      this.view.displayErrorMessage(`Failed to post the status because of exception: ${error}`);
+      this.view.displayErrorMessage(`Failed to post the status because of exception: ${(error as Error).message}`);
     } finally {
       this.view.clearLastInfoMessage();
       this.view.setIsLoading(false);

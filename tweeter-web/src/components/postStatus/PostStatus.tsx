@@ -21,6 +21,11 @@ const PostStatus = () => {
     setPost("");
   };
 
+  const submitPost = (event: React.MouseEvent) => {
+    event.preventDefault();
+    presenter.submitPost(post, currentUser!, authToken!);
+  };
+
   const listener: PostStatusView = {
     setIsLoading,
     displayInfoMessage,
@@ -52,7 +57,7 @@ const PostStatus = () => {
             type="button"
             disabled={checkButtonStatus()}
             style={{ width: "8em" }}
-            onClick={(event) => presenter.submitPost(event, post, currentUser!, authToken!)}
+            onClick={submitPost}
           >
             {isLoading ? (
               <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
