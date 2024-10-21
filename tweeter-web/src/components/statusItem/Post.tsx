@@ -1,16 +1,12 @@
-import { AuthToken, Status, User, Type } from "tweeter-shared";
+import { Status, Type } from "tweeter-shared";
 import { Link } from "react-router-dom";
-import useToastListener from "../toaster/ToastListenerHook";
 import useUserNavigation from "../userInfo/UserNavigationHook";
-import useUserInfo from "../userInfo/UserInfoHook";
 
 interface Props {
   status: Status;
 }
 
 const Post = (props: Props) => {
-  const { setDisplayedUser, currentUser, authToken } = useUserInfo();
-  const { displayErrorMessage } = useToastListener();
   const { navigateToUser } = useUserNavigation();
 
   return (

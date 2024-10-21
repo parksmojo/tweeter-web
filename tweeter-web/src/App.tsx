@@ -37,7 +37,6 @@ const AuthenticatedRoutes = () => {
         <Route index element={<Navigate to="/feed" />} />
         <Route
           path="feed"
-          // element={<StatusItemScroller presenterGenerator={(view: ItemView<Status>) => new FeedPresenter(view)} />}
           element={
             <ItemScroller
               key={"feed"}
