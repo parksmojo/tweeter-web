@@ -9,7 +9,14 @@ export class FollowService {
     lastItem: User | null
   ): Promise<[User[], boolean]> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+    const server = new ServerFacade();
+    const request: PagedUserItemRequest = {
+      token: authToken.token,
+      userAlias: userAlias,
+      pageSize: pageSize,
+      lastItem: lastItem,
+    };
+    return server.getMoreFollowers(request);
   }
 
   public async loadMoreFollowees(
