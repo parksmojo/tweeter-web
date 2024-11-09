@@ -23,6 +23,10 @@ export class UserService {
   }
 
   public async login(alias: string, password: string): Promise<[UserDto, AuthTokenDto]> {
+    if (!alias || !password) {
+      throw new Error("[Bad Request] No alias or password given");
+    }
+
     const user = FakeData.instance.firstUser;
 
     if (user === null) {
