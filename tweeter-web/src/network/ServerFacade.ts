@@ -1,5 +1,6 @@
 import {
   AuthToken,
+  FollowRequest,
   GetFollowerCountRequest,
   GetFollowerCountResponse,
   GetIsFollowerRequest,
@@ -166,6 +167,24 @@ export class ServerFacade {
     const response = await this.clientCommunicator.doPost<TweeterRequest, TweeterResponse>(request, `/user/logout`);
 
     // Handle errors
+    if (!response.success) {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async followUser(request: FollowRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<FollowRequest, TweeterResponse>(request, `/user/follow`);
+
+    if (!response.success) {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async unfollowUser(request: FollowRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<FollowRequest, TweeterResponse>(request, `/user/unfollow`);
+
     if (!response.success) {
       console.error(response);
       throw new Error(response.message!);

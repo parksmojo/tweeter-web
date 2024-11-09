@@ -8,6 +8,7 @@ import {
   LoginRequest,
   RegisterRequest,
   TweeterRequest,
+  FollowRequest,
 } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { ServerFacade } from "../../network/ServerFacade";
@@ -102,5 +103,21 @@ export class UserService {
       token: authToken.token,
     };
     await this.server.logout(request);
+  }
+
+  public async followUser(authToken: AuthToken, selectedUser: User): Promise<void> {
+    const request: FollowRequest = {
+      token: authToken.token,
+      selectedUser: selectedUser.dto,
+    };
+    await this.server.followUser(request);
+  }
+
+  public async unfollowUser(authToken: AuthToken, selectedUser: User): Promise<void> {
+    const request: FollowRequest = {
+      token: authToken.token,
+      selectedUser: selectedUser.dto,
+    };
+    await this.server.unfollowUser(request);
   }
 }

@@ -52,4 +52,12 @@ export class UserService {
   public async logout(token: string): Promise<void> {
     console.log(`Successfully logging out`);
   }
+
+  public async followUser(token: string, selectedUser: UserDto): Promise<void> {
+    console.log(`Following user: ${selectedUser}`);
+  }
+
+  public async unfollowUser(token: string, selectedUser: UserDto): Promise<void> {
+    console.log(`Unollowing user: ${selectedUser}`);
+  }
 }

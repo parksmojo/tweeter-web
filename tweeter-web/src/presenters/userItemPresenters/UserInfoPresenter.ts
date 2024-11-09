@@ -49,10 +49,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     authToken: AuthToken,
     userToFollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server
+    await this.userService.followUser(authToken, userToFollow);
 
     const followerCount = await this.userService.getFollowerCount(authToken, userToFollow);
     const followeeCount = await this.userService.getFolloweeCount(authToken, userToFollow);
@@ -64,10 +61,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     authToken: AuthToken,
     userToUnfollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server
+    await this.userService.unfollowUser(authToken, userToUnfollow);
 
     const followerCount = await this.userService.getFollowerCount(authToken, userToUnfollow);
     const followeeCount = await this.userService.getFolloweeCount(authToken, userToUnfollow);

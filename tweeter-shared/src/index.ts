@@ -27,6 +27,7 @@ export type { GetIsFollowerRequest } from "./model/net/request/GetIsFollowerRequ
 export type { LoginRequest } from "./model/net/request/LoginRequest";
 export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 export type { GetFollowerCountRequest } from "./model/net/request/GetFollowerCountRequest";
+export type { FollowRequest } from "./model/net/request/FollowRequest";
 export type {
   PagedItemRequest,
   PagedUserItemRequest,
