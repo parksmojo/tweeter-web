@@ -15,6 +15,7 @@ export { AuthToken } from "./model/domain/AuthToken";
 //
 export type { UserDto } from "./model/dto/UserDto";
 export type { StatusDto } from "./model/dto/StatusDto";
+export type { AuthTokenDto } from "./model/dto/AuthTokenDto";
 
 //
 // Requests
@@ -22,6 +23,10 @@ export type { StatusDto } from "./model/dto/StatusDto";
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
 export type { PostStatusRequest } from "./model/net/request/PostStatusRequest";
 export type { GetUserRequest } from "./model/net/request/GetUserRequest";
+export type { GetIsFollowerRequest } from "./model/net/request/GetIsFollowerRequest";
+export type { LoginRequest } from "./model/net/request/LoginRequest";
+export type { RegisterRequest } from "./model/net/request/RegisterRequest";
+export type { GetFollowerCountRequest } from "./model/net/request/GetFollowerCountRequest";
 export type {
   PagedItemRequest,
   PagedUserItemRequest,
@@ -32,7 +37,10 @@ export type {
 // Response
 //
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
+export type { GetIsFollowerResponse } from "./model/net/response/GetIsFollowerResponse";
+export type { GetFollowerCountResponse } from "./model/net/response/GetFollowerCountResponse";
 export type { GetUserResponse } from "./model/net/response/GetUserResponse";
+export type { SessionResponse } from "./model/net/response/SessionResponse";
 export type {
   PagedItemResponse,
   PagedUserItemResponse,
