@@ -1,17 +1,22 @@
 import {
+  AuthToken,
   GetFollowerCountRequest,
   GetFollowerCountResponse,
   GetIsFollowerRequest,
   GetIsFollowerResponse,
   GetUserRequest,
   GetUserResponse,
+  LoginRequest,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
   PostStatusRequest,
+  RegisterRequest,
+  SessionResponse,
   Status,
   StatusDto,
+  TweeterRequest,
   TweeterResponse,
   User,
   UserDto,
@@ -131,6 +136,37 @@ export class ServerFacade {
     if (response.success) {
       return response.count;
     } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async register(request: RegisterRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<RegisterRequest, SessionResponse>(request, `/user/register`);
+    if (response.success) {
+      return [User.fromDto(response.user)!, AuthToken.fromDto(response.authToken)!];
+    } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async login(request: LoginRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<LoginRequest, SessionResponse>(request, `/user/login`);
+
+    if (response.success) {
+      return [User.fromDto(response.user)!, AuthToken.fromDto(response.authToken)!];
+    } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async logout(request: TweeterRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<TweeterRequest, TweeterResponse>(request, `/user/logout`);
+
+    // Handle errors
+    if (!response.success) {
       console.error(response);
       throw new Error(response.message!);
     }

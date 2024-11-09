@@ -5,6 +5,9 @@ import {
   GetUserRequest,
   GetIsFollowerRequest,
   GetFollowerCountRequest,
+  LoginRequest,
+  RegisterRequest,
+  TweeterRequest,
 } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { ServerFacade } from "../../network/ServerFacade";
@@ -52,14 +55,18 @@ export class UserService {
 
   public async login(alias: string, password: string): Promise<[User, AuthToken]> {
     console.log(`Successfully logging in ${alias}`);
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const request: LoginRequest = {
+      token: "",
+      alias: alias,
+      password: password,
+    };
+    const [user, authToken] = await this.server.login(request);
 
     if (user === null) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user, FakeData.instance.authToken];
+    return [user, authToken];
   }
 
   public async register(
@@ -70,23 +77,30 @@ export class UserService {
     userImageBytes: Uint8Array,
     imageFileExtension: string
   ): Promise<[User, AuthToken]> {
-    console.log(`Successfully registering ${alias}`);
-    // Not neded now, but will be needed when you make the request to the server in milestone 3
     const imageStringBase64: string = Buffer.from(userImageBytes).toString("base64");
 
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const request: RegisterRequest = {
+      token: "",
+      firstName: firstName,
+      lastName: lastName,
+      alias: alias,
+      password: password,
+      imageStringBase64: imageStringBase64,
+      imageFileExtension: imageFileExtension,
+    };
+    const [user, authToken] = await this.server.register(request);
 
     if (user === null) {
       throw new Error("Invalid registration");
     }
 
-    return [user, FakeData.instance.authToken];
+    return [user, authToken];
   }
 
   public async logout(authToken: AuthToken): Promise<void> {
-    console.log(`Successfully logging out`);
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+    const request: TweeterRequest = {
+      token: authToken.token,
+    };
+    await this.server.logout(request);
   }
 }
