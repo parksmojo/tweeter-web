@@ -14,7 +14,7 @@ export class FollowService {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
-      lastItem: lastItem,
+      lastItem: lastItem === null ? null : lastItem.dto,
     };
     return this.server.getMoreFollowers(request);
   }
@@ -29,7 +29,7 @@ export class FollowService {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
-      lastItem: lastItem,
+      lastItem: lastItem === null ? null : lastItem.dto,
     };
     return this.server.getMoreFollowees(request);
   }

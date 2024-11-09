@@ -14,7 +14,7 @@ export class StatusService {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
-      lastItem: lastItem,
+      lastItem: lastItem === null ? null : lastItem.dto,
     };
     return this.server.getMoreFeed(request);
   }
@@ -29,7 +29,7 @@ export class StatusService {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
-      lastItem: lastItem,
+      lastItem: lastItem === null ? null : lastItem.dto,
     };
     return this.server.getMoreStory(request);
   }
