@@ -7,32 +7,17 @@ export class ServerFacade {
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
   public async getMoreFollowees(request: PagedUserItemRequest): Promise<[User[], boolean]> {
-    const response = await this.clientCommunicator.doPost<PagedUserItemRequest, PagedUserItemResponse>(
-      request,
-      "/followee/list"
-    );
-
-    // Convert the UserDto array returned by ClientCommunicator to a User array
-    const items: User[] | null =
-      response.success && response.items ? response.items.map((dto) => User.fromDto(dto) as User) : null;
-
-    // Handle errors
-    if (response.success) {
-      if (items == null) {
-        throw new Error(`No followees found`);
-      } else {
-        return [items, response.hasMore];
-      }
-    } else {
-      console.error(response);
-      throw new Error(response.message!);
-    }
+    return await this.getMoreUserItems("followee", request);
   }
 
   public async getMoreFollowers(request: PagedUserItemRequest): Promise<[User[], boolean]> {
+    return await this.getMoreUserItems("follower", request);
+  }
+
+  private async getMoreUserItems(userType: string, request: PagedUserItemRequest): Promise<[User[], boolean]> {
     const response = await this.clientCommunicator.doPost<PagedUserItemRequest, PagedUserItemResponse>(
       request,
-      "/follower/list"
+      `/${userType}/list`
     );
 
     // Convert the UserDto array returned by ClientCommunicator to a User array
@@ -42,7 +27,7 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       if (items == null) {
-        throw new Error(`No followers found`);
+        throw new Error(`No ${userType}s found`);
       } else {
         return [items, response.hasMore];
       }

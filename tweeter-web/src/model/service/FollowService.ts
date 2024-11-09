@@ -2,21 +2,21 @@ import { AuthToken, User, FakeData, Status, PagedUserItemRequest } from "tweeter
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class FollowService {
+  private server = new ServerFacade();
+
   public async loadMoreFollowers(
     authToken: AuthToken,
     userAlias: string,
     pageSize: number,
     lastItem: User | null
   ): Promise<[User[], boolean]> {
-    // TODO: Replace with the result of calling server
-    const server = new ServerFacade();
     const request: PagedUserItemRequest = {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
       lastItem: lastItem,
     };
-    return server.getMoreFollowers(request);
+    return this.server.getMoreFollowers(request);
   }
 
   public async loadMoreFollowees(
@@ -25,14 +25,12 @@ export class FollowService {
     pageSize: number,
     lastItem: User | null
   ): Promise<[User[], boolean]> {
-    // TODO: Replace with the result of calling server
-    const server = new ServerFacade();
     const request: PagedUserItemRequest = {
       token: authToken.token,
       userAlias: userAlias,
       pageSize: pageSize,
       lastItem: lastItem,
     };
-    return server.getMoreFollowees(request);
+    return this.server.getMoreFollowees(request);
   }
 }
