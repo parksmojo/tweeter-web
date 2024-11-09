@@ -3,8 +3,10 @@ import {
   PagedStatusItemResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  PostStatusRequest,
   Status,
   StatusDto,
+  TweeterResponse,
   User,
   UserDto,
 } from "tweeter-shared";
@@ -54,7 +56,7 @@ export class ServerFacade {
     return await this.getMoreStatusItems("story", request);
   }
 
-  private async getMoreStatusItems(statusType: string, request: PagedStatusItemRequest): Promise<[User[], boolean]> {
+  private async getMoreStatusItems(statusType: string, request: PagedStatusItemRequest): Promise<[Status[], boolean]> {
     const response = await this.clientCommunicator.doPost<PagedStatusItemRequest, PagedStatusItemResponse>(
       request,
       `/${statusType}/list`
@@ -72,6 +74,17 @@ export class ServerFacade {
         return [items, response.hasMore];
       }
     } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    console.log("Server posting status");
+    const response = await this.clientCommunicator.doPost<PostStatusRequest, TweeterResponse>(request, `/story/post`);
+
+    // Handle errors
+    if (!response.success) {
       console.error(response);
       throw new Error(response.message!);
     }
