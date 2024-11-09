@@ -1,4 +1,6 @@
 import {
+  GetUserRequest,
+  GetUserResponse,
   PagedStatusItemRequest,
   PagedStatusItemResponse,
   PagedUserItemRequest,
@@ -13,7 +15,7 @@ import {
 import { ClientCommunicator } from "./ClientCommunicator";
 
 export class ServerFacade {
-  private SERVER_URL = "https://ys3nvfi53m.execute-api.us-west-2.amazonaws.com/dev/";
+  private SERVER_URL = "https://ys3nvfi53m.execute-api.us-west-2.amazonaws.com/dev";
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
@@ -85,6 +87,18 @@ export class ServerFacade {
 
     // Handle errors
     if (!response.success) {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async getUser(request: GetUserRequest): Promise<User> {
+    const response = await this.clientCommunicator.doPost<GetUserRequest, GetUserResponse>(request, `/user/find`);
+
+    // Handle errors
+    if (response.success) {
+      return User.fromDto(response.user)!;
+    } else {
       console.error(response);
       throw new Error(response.message!);
     }

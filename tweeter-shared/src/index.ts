@@ -21,6 +21,7 @@ export type { StatusDto } from "./model/dto/StatusDto";
 //
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
 export type { PostStatusRequest } from "./model/net/request/PostStatusRequest";
+export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 export type {
   PagedItemRequest,
   PagedUserItemRequest,
@@ -31,6 +32,7 @@ export type {
 // Response
 //
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
+export type { GetUserResponse } from "./model/net/response/GetUserResponse";
 export type {
   PagedItemResponse,
   PagedUserItemResponse,
