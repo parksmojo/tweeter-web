@@ -1,3 +1,4 @@
+import { StatusDto } from "../dto/StatusDto";
 import { PostSegment, Type } from "./PostSegment";
 import { User } from "./User";
 import { format } from "date-fns";
@@ -38,14 +39,7 @@ export class Status {
     }
 
     if (startIndex < post.length) {
-      segments.push(
-        new PostSegment(
-          post.substring(startIndex),
-          startIndex,
-          post.length,
-          Type.text
-        )
-      );
+      segments.push(new PostSegment(post.substring(startIndex), startIndex, post.length, Type.text));
     }
 
     return segments;
@@ -77,9 +71,7 @@ export class Status {
 
       if (startIndex > -1) {
         // Push the url
-        references.push(
-          new PostSegment(url, startIndex, startIndex + url.length, Type.url)
-        );
+        references.push(new PostSegment(url, startIndex, startIndex + url.length, Type.url));
 
         // Move start and previous start past the url
         startIndex = startIndex + url.length;
@@ -149,14 +141,7 @@ export class Status {
 
       if (startIndex > -1) {
         // Push the alias
-        references.push(
-          new PostSegment(
-            mention,
-            startIndex,
-            startIndex + mention.length,
-            Type.alias
-          )
-        );
+        references.push(new PostSegment(mention, startIndex, startIndex + mention.length, Type.alias));
 
         // Move start and previous start past the mention
         startIndex = startIndex + mention.length;
@@ -190,9 +175,7 @@ export class Status {
     let match;
     while ((match = regex.exec(post)) !== null) {
       const matchIndex = match.index;
-      newlines.push(
-        new PostSegment("\n", matchIndex, matchIndex + 1, Type.newline)
-      );
+      newlines.push(new PostSegment("\n", matchIndex, matchIndex + 1, Type.newline));
     }
 
     return newlines;
@@ -236,11 +219,7 @@ export class Status {
   }
 
   public equals(other: Status): boolean {
-    return (
-      this._user.equals(other.user) &&
-      this._timestamp === other._timestamp &&
-      this._post === other.post
-    );
+    return this._user.equals(other.user) && this._timestamp === other._timestamp && this._post === other.post;
   }
 
   public static fromJson(json: string | null | undefined): Status | null {
@@ -273,5 +252,18 @@ export class Status {
 
   public toJson(): string {
     return JSON.stringify(this);
+  }
+
+  public get dto(): StatusDto {
+    return {
+      post: this.post,
+      user: this.user.dto,
+      timestamp: this.timestamp,
+      segments: this.segments.map((segment) => segment.dto),
+    };
+  }
+
+  public static fromDto(dto: StatusDto | null): Status | null {
+    return dto == null ? null : new Status(dto.post, User.fromDto(dto.user)!, dto.timestamp);
   }
 }

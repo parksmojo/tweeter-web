@@ -14,18 +14,27 @@ export { AuthToken } from "./model/domain/AuthToken";
 // DTOs
 //
 export type { UserDto } from "./model/dto/UserDto";
+export type { StatusDto } from "./model/dto/StatusDto";
 
 //
 // Requests
 //
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
-export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
+export type {
+  PagedItemRequest,
+  PagedUserItemRequest,
+  PagedStatusItemRequest,
+} from "./model/net/request/PagedItemRequests";
 
 //
 // Response
 //
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
-export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
+export type {
+  PagedItemResponse,
+  PagedUserItemResponse,
+  PagedStatusItemResponse,
+} from "./model/net/response/PagedtemResponses";
 
 //
 // Other
