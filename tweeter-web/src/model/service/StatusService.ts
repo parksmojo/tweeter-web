@@ -40,6 +40,6 @@ export class StatusService {
       token: authToken.token,
       newStatus: newStatus,
     };
-    this.server.postStatus(request);
+    await this.server.postStatus(request);
   }
 }
