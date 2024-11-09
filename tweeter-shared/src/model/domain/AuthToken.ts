@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import { AuthTokenDto } from "../dto/AuthTokenDto";
 export class AuthToken {
   private _token: string;
   private _timestamp: number;
@@ -15,13 +16,10 @@ export class AuthToken {
     } catch (error) {
       // UUID not available. Generating a random string. Making it 64 characters to reduce the liklihood of a duplicate
       let result = "";
-      const characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^*()-+";
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$^*()-+";
       const charactersLength = characters.length;
       for (let i = 0; i < 64; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
       }
 
       return result;
@@ -51,8 +49,7 @@ export class AuthToken {
 
   public static fromJson(json: string | null | undefined): AuthToken | null {
     if (!!json) {
-      const jsonObject: { _token: string; _timestamp: number } =
-        JSON.parse(json);
+      const jsonObject: { _token: string; _timestamp: number } = JSON.parse(json);
       return new AuthToken(jsonObject._token, jsonObject._timestamp);
     } else {
       return null;
@@ -61,5 +58,16 @@ export class AuthToken {
 
   public toJson(): string {
     return JSON.stringify(this);
+  }
+
+  public get dto(): AuthTokenDto {
+    return {
+      token: this.token,
+      timestamp: this.timestamp,
+    };
+  }
+
+  public static fromDto(dto: AuthTokenDto | null): AuthToken | null {
+    return dto == null ? null : new AuthToken(dto.token, dto.timestamp);
   }
 }
