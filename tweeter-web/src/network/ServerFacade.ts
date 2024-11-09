@@ -1,4 +1,6 @@
 import {
+  GetFollowerCountRequest,
+  GetFollowerCountResponse,
   GetIsFollowerRequest,
   GetIsFollowerResponse,
   GetUserRequest,
@@ -114,6 +116,20 @@ export class ServerFacade {
 
     if (response.success) {
       return response.isFollower;
+    } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async getFollowCount(followType: string, request: GetFollowerCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<GetFollowerCountRequest, GetFollowerCountResponse>(
+      request,
+      `/user/${followType}/count`
+    );
+
+    if (response.success) {
+      return response.count;
     } else {
       console.error(response);
       throw new Error(response.message!);

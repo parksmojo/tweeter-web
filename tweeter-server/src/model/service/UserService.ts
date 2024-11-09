@@ -14,11 +14,11 @@ export class UserService {
     return FakeData.instance.isFollower();
   }
 
-  public async getFolloweeCount(authToken: AuthToken, user: User): Promise<number> {
+  public async getFolloweeCount(token: string, user: UserDto): Promise<number> {
     return FakeData.instance.getFolloweeCount(user.alias);
   }
 
-  public async getFollowerCount(authToken: AuthToken, user: User): Promise<number> {
+  public async getFollowerCount(token: string, user: UserDto): Promise<number> {
     return FakeData.instance.getFollowerCount(user.alias);
   }
 

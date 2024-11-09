@@ -8,5 +8,7 @@ tweeterGetStory | lambda/status/GetStoryLambda.handler
 tweeterPostStatus | lambda/status/PostStatusLambda.handler
 tweeterGetUser | lambda/user/GetUserLambda.handler
 tweeterGetIsFollowerStatus | lambda/user/GetIsFollowerStatusLambda.handler
+tweeterGetFollowerCount | lambda/user/GetFollowerCountLambda.handler
+tweeterGetFolloweeCount | lambda/user/GetFolloweeCountLambda.handler
 '
 LAMBDALAYER_ARN='arn:aws:lambda:us-west-2:905417999987:layer:tweeterServer:8'
