@@ -1,4 +1,4 @@
-import { AuthToken, User, FakeData, GetUserRequest } from "tweeter-shared";
+import { AuthToken, User, FakeData, GetUserRequest, GetIsFollowerRequest } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { ServerFacade } from "../../network/ServerFacade";
 
@@ -19,8 +19,12 @@ export class UserService {
   }
 
   public async getIsFollowerStatus(authToken: AuthToken, user: User, selectedUser: User): Promise<boolean> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.isFollower();
+    const request: GetIsFollowerRequest = {
+      token: authToken.token,
+      user: user,
+      selectedUser: selectedUser,
+    };
+    return this.server.getIsFollower(request);
   }
 
   public async getFolloweeCount(authToken: AuthToken, user: User): Promise<number> {

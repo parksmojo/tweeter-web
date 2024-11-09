@@ -1,4 +1,6 @@
 import {
+  GetIsFollowerRequest,
+  GetIsFollowerResponse,
   GetUserRequest,
   GetUserResponse,
   PagedStatusItemRequest,
@@ -98,6 +100,20 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       return User.fromDto(response.user)!;
+    } else {
+      console.error(response);
+      throw new Error(response.message!);
+    }
+  }
+
+  public async getIsFollower(request: GetIsFollowerRequest): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<GetIsFollowerRequest, GetIsFollowerResponse>(
+      request,
+      `/user/isfollower`
+    );
+
+    if (response.success) {
+      return response.isFollower;
     } else {
       console.error(response);
       throw new Error(response.message!);

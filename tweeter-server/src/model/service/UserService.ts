@@ -10,7 +10,7 @@ export class UserService {
     return dto;
   }
 
-  public async getIsFollowerStatus(authToken: AuthToken, user: User, selectedUser: User): Promise<boolean> {
+  public async getIsFollowerStatus(token: string, user: UserDto, selectedUser: UserDto): Promise<boolean> {
     return FakeData.instance.isFollower();
   }
 
