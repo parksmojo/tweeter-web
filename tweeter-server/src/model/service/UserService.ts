@@ -29,11 +29,7 @@ export class UserService {
 
     const user = FakeData.instance.firstUser;
 
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user.dto, FakeData.instance.authToken.dto];
+    return [user!.dto, FakeData.instance.authToken.dto];
   }
 
   public async register(
@@ -46,11 +42,7 @@ export class UserService {
   ): Promise<[UserDto, AuthTokenDto]> {
     const user = FakeData.instance.firstUser;
 
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
-
-    return [user.dto, FakeData.instance.authToken.dto];
+    return [user!.dto, FakeData.instance.authToken.dto];
   }
 
   public async logout(token: string): Promise<void> {
