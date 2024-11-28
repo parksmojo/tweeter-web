@@ -1,7 +1,18 @@
 import { AuthToken, User, FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
 import { Buffer } from "buffer";
+import { FileDao } from "../../dao/file/FileDao";
+import { UserDao } from "../../dao/user/UserDao";
+import { DaoFactory } from "../../dao/factory/DaoFactory";
 
 export class UserService {
+  private fileDao: FileDao;
+  private userDao: UserDao;
+
+  constructor(daoFactory: DaoFactory) {
+    this.fileDao = daoFactory.getFileDao();
+    this.userDao = daoFactory.getUserDao();
+  }
+
   public async getUser(token: string, alias: string): Promise<UserDto> {
     const dto = FakeData.instance.findUserByAlias(alias)?.dto;
     if (!dto) {
@@ -40,9 +51,19 @@ export class UserService {
     imageStringBase64: string,
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    const user = FakeData.instance.firstUser;
+    const existingUser = await this.userDao.getUser(alias);
+    if (existingUser) {
+      throw new Error("[Bad Request] User already exists");
+    }
 
-    return [user!.dto, FakeData.instance.authToken.dto];
+    const fileName = alias + imageFileExtension;
+    const imageUrl = await this.fileDao.putImage(fileName, imageStringBase64);
+
+    await this.userDao.createUser(firstName, lastName, alias, password, imageUrl);
+
+    const user = new User(firstName, lastName, alias, imageUrl);
+    const authToken = AuthToken.Generate();
+    return [user.dto, authToken.dto];
   }
 
   public async logout(token: string): Promise<void> {
