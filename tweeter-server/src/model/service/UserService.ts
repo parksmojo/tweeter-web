@@ -3,19 +3,22 @@ import { FileDao } from "../../dao/file/FileDao";
 import { UserDao } from "../../dao/user/UserDao";
 import { DaoFactory } from "../../dao/factory/DaoFactory";
 import { Service } from "./Service";
+import { FollowDao } from "../../dao/follow/FollowDao";
 
 export class UserService extends Service {
   private fileDao: FileDao;
   private userDao: UserDao;
+  private followDao: FollowDao;
 
   constructor(daoFactory: DaoFactory) {
     super(daoFactory);
     this.fileDao = daoFactory.getFileDao();
     this.userDao = daoFactory.getUserDao();
+    this.followDao = daoFactory.getFollowDao();
   }
 
   public async getUser(token: string, alias: string): Promise<UserDto> {
-    this.verifyAuth(token);
+    await this.verifyAuth(token);
     const dto = (await this.userDao.getUserFromAlias(alias))?.dto;
     if (!dto) {
       throw new Error("[Bad Request] User not found");
@@ -24,15 +27,30 @@ export class UserService extends Service {
   }
 
   public async followUser(token: string, selectedUser: UserDto): Promise<void> {
+    await this.verifyAuth(token);
+    const followee = await this.userDao.getUserFromAlias(selectedUser.alias);
+    if (!followee) {
+      throw new Error("[Bad Request] Selected user not found");
+    }
     console.log(`Following user: ${selectedUser}`);
+    const followerAlias = await this.authDao.getAliasFromAuth(token);
+    await this.followDao.createFollow(followerAlias!, followee.alias);
   }
 
   public async unfollowUser(token: string, selectedUser: UserDto): Promise<void> {
+    await this.verifyAuth(token);
+    const followee = await this.userDao.getUserFromAlias(selectedUser.alias);
+    if (!followee) {
+      throw new Error("[Bad Request] Selected user not found");
+    }
     console.log(`Unollowing user: ${selectedUser}`);
+    const followerAlias = await this.authDao.getAliasFromAuth(token);
+    await this.followDao.deleteFollow(followerAlias!, followee.alias);
   }
 
   public async getIsFollowerStatus(token: string, user: UserDto, selectedUser: UserDto): Promise<boolean> {
-    return FakeData.instance.isFollower();
+    await this.verifyAuth(token);
+    return this.followDao.follows(user.alias, selectedUser.alias);
   }
 
   public async getFolloweeCount(token: string, user: UserDto): Promise<number> {

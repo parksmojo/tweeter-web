@@ -6,13 +6,10 @@ import { compare, genSalt, hash } from "bcryptjs";
 
 export class UserDaoDynamo implements UserDao {
   private readonly userTable = "user";
-  private readonly authTable = "auth";
   private readonly aliasAttr = "alias";
   private readonly passwordAttr = "password";
   private readonly firstNameAttr = "firstname";
   private readonly lastNameAttr = "lastname";
-  private readonly tokenAttr = "token";
-  private readonly timestampAttr = "lastused";
   private readonly imageUrlAttr = "imageurl";
 
   private client;

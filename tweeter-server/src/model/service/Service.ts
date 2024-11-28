@@ -10,14 +10,19 @@ export abstract class Service {
   }
 
   protected async verifyAuth(token: string): Promise<void> {
+    console.log("Verifying authToken");
     const authToken = await this.authDao.getAuth(token);
     if (!authToken) {
       throw new Error("[Bad Request] Token not found");
     }
+
     const now = Date.now();
-    if (now - authToken?.timestamp < this.authLifespan) {
+    const difference = now - authToken?.timestamp;
+    console.log(` - Time difference: ${difference / 60000} minutes`);
+
+    if (difference > this.authLifespan) {
       throw new Error("[Bad Request] Token expired");
     }
-    await this.authDao.updateAuth(token);
+    await this.authDao.updateAuth(token, now);
   }
 }

@@ -32,8 +32,8 @@ export class UserService {
   public async getIsFollowerStatus(authToken: AuthToken, user: User, selectedUser: User): Promise<boolean> {
     const request: GetIsFollowerRequest = {
       token: authToken.token,
-      user: user,
-      selectedUser: selectedUser,
+      user: user.dto,
+      selectedUser: selectedUser.dto,
     };
     return this.server.getIsFollower(request);
   }

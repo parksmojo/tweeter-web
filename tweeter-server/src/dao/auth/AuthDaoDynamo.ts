@@ -38,7 +38,7 @@ export class AuthDaoDynamo implements AuthDao {
     return result.Item == undefined ? null : new AuthToken(token, result.Item[this.timestampAttr]);
   }
 
-  async updateAuth(token: string): Promise<void> {
+  async updateAuth(token: string, time: number): Promise<void> {
     console.log("Entering userDaoDynamo.updateAuth()");
     const params = {
       TableName: this.authTable,
@@ -48,7 +48,7 @@ export class AuthDaoDynamo implements AuthDao {
         "#timeEdited": this.timestampAttr,
       },
       ExpressionAttributeValues: {
-        ":newTime": Date.now(),
+        ":newTime": time,
       },
     };
     await this.client.send(new UpdateCommand(params));
@@ -61,5 +61,15 @@ export class AuthDaoDynamo implements AuthDao {
       Key: { [this.tokenAttr]: token },
     };
     await this.client.send(new DeleteCommand(params));
+  }
+
+  async getAliasFromAuth(token: string): Promise<string | null> {
+    console.log("Entering userDaoDynamo.getAliasFromAuth()");
+    const params = {
+      TableName: this.authTable,
+      Key: { [this.tokenAttr]: token },
+    };
+    const result = await this.client.send(new GetCommand(params));
+    return result.Item == undefined ? null : result.Item[this.aliasAttr];
   }
 }
