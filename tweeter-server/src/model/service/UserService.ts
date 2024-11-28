@@ -38,9 +38,17 @@ export class UserService {
       throw new Error("[Bad Request] No alias or password given");
     }
 
-    const user = FakeData.instance.firstUser;
+    const user = await this.userDao.getUser(alias);
+    if (!user) {
+      throw new Error("[Bad Request] User doesn't exist");
+    }
 
-    return [user!.dto, FakeData.instance.authToken.dto];
+    if (!(await this.userDao.verifyPassword(alias, password))) {
+      throw new Error("[Bad Request] Incorrect password");
+    }
+
+    const authToken = AuthToken.Generate();
+    return [user.dto, authToken.dto];
   }
 
   public async register(
@@ -51,6 +59,7 @@ export class UserService {
     imageStringBase64: string,
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
+    console.log("Entering userService.register()");
     const existingUser = await this.userDao.getUser(alias);
     if (existingUser) {
       throw new Error("[Bad Request] User already exists");

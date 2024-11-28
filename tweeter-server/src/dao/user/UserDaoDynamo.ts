@@ -14,7 +14,11 @@ export class UserDaoDynamo implements UserDao {
   private readonly timestampAttr = "lastused";
   private readonly imageUrlAttr = "imageurl";
 
-  private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient());
+  private client;
+
+  constructor() {
+    this.client = DynamoDBDocumentClient.from(new DynamoDBClient());
+  }
 
   async hashWithSalt(plainText: string): Promise<string> {
     const salt = await genSalt();
@@ -29,6 +33,7 @@ export class UserDaoDynamo implements UserDao {
     password: string,
     imageUrl: string
   ): Promise<void> {
+    console.log("Entering userDaoDynamo.createUser()");
     const params = {
       TableName: this.tableName,
       Item: {
@@ -43,6 +48,7 @@ export class UserDaoDynamo implements UserDao {
   }
 
   async verifyPassword(alias: string, inputPassword: string): Promise<boolean> {
+    console.log("Entering userDaoDynamo.verifyPassword()");
     const params = {
       TableName: this.tableName,
       Key: { [this.aliasAttr]: alias },
@@ -52,6 +58,7 @@ export class UserDaoDynamo implements UserDao {
   }
 
   async getUser(alias: string): Promise<User | null> {
+    console.log("Entering userDaoDynamo.getUser()");
     const params = {
       TableName: this.tableName,
       Key: { [this.aliasAttr]: alias },
@@ -68,6 +75,7 @@ export class UserDaoDynamo implements UserDao {
   }
 
   async setAuth(alias: string, token: string, timestamp: number): Promise<void> {
+    console.log("Entering userDaoDynamo.setAuth()");
     const params = {
       TableName: this.tableName,
       Key: { [this.aliasAttr]: alias },

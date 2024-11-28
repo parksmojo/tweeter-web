@@ -12,7 +12,7 @@ export class FileDaoS3 implements FileDao {
   }
 
   async putImage(fileName: string, imageStringBase64Encoded: string): Promise<string> {
-    // throw new Error("Method not yet implemented");
+    console.log("Entering fileDaoS3.putImage()");
     let decodedImageBuffer: Buffer = Buffer.from(imageStringBase64Encoded, "base64");
     const s3Params = {
       Bucket: this.bucketName,
