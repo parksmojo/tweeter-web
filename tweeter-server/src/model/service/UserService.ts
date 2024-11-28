@@ -1,16 +1,31 @@
 import { AuthToken, User, FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
-import { Buffer } from "buffer";
 import { FileDao } from "../../dao/file/FileDao";
 import { UserDao } from "../../dao/user/UserDao";
 import { DaoFactory } from "../../dao/factory/DaoFactory";
+import { AuthDao } from "../../dao/auth/AuthDao";
 
 export class UserService {
   private fileDao: FileDao;
   private userDao: UserDao;
+  private authDao: AuthDao;
+  private readonly authLifespan: number = 30000;
 
   constructor(daoFactory: DaoFactory) {
     this.fileDao = daoFactory.getFileDao();
     this.userDao = daoFactory.getUserDao();
+    this.authDao = daoFactory.getAuthDao();
+  }
+
+  private async verifyAuth(token: string): Promise<void> {
+    const authToken = await this.authDao.getAuth(token);
+    if (!authToken) {
+      throw new Error("[Bad Request] Token not found");
+    }
+    const now = Date.now();
+    if (now - authToken?.timestamp < this.authLifespan) {
+      throw new Error("[Bad Request] Token expired");
+    }
+    await this.authDao.updateAuth(token);
   }
 
   public async getUser(token: string, alias: string): Promise<UserDto> {
@@ -48,7 +63,7 @@ export class UserService {
     }
 
     const authToken = AuthToken.Generate();
-    await this.userDao.setAuth(alias, authToken.token, authToken.timestamp);
+    await this.authDao.setAuth(alias, authToken.token, authToken.timestamp);
     return [user.dto, authToken.dto];
   }
 
@@ -73,20 +88,14 @@ export class UserService {
     const authToken = AuthToken.Generate();
 
     await this.userDao.createUser(firstName, lastName, alias, password, imageUrl);
-    await this.userDao.setAuth(alias, authToken.token, authToken.timestamp);
+    await this.authDao.setAuth(alias, authToken.token, authToken.timestamp);
 
     return [user.dto, authToken.dto];
   }
 
   public async logout(token: string): Promise<void> {
     console.log("Entering userService.logout()");
-    console.log(" - Logging out token:", token);
-
-    const user = await this.userDao.getUserFromToken(token);
-    if (!user) {
-      throw new Error("[Bad Request] User doesn't exist");
-    }
-    await this.userDao.deleteAuth(user!.alias);
+    await this.authDao.deleteAuth(token);
   }
 
   public async followUser(token: string, selectedUser: UserDto): Promise<void> {

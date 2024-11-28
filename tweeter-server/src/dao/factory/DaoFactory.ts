@@ -1,3 +1,4 @@
+import { AuthDao } from "../auth/AuthDao";
 import { FileDao } from "../file/FileDao";
 import { FollowDao } from "../follow/FollowDao";
 import { StatusDao } from "../status/StatusDao";
@@ -8,4 +9,5 @@ export interface DaoFactory {
   getFollowDao(): FollowDao;
   getStatusDao(): StatusDao;
   getUserDao(): UserDao;
+  getAuthDao(): AuthDao;
 }

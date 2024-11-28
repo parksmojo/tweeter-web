@@ -1,12 +1,12 @@
-import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UserDao } from "./UserDao";
 import { User } from "tweeter-shared";
 import { compare, genSalt, hash } from "bcryptjs";
 
 export class UserDaoDynamo implements UserDao {
-  private readonly tableName = "user";
-  private readonly tokenIndex = "token-index";
+  private readonly userTable = "user";
+  private readonly authTable = "auth";
   private readonly aliasAttr = "alias";
   private readonly passwordAttr = "password";
   private readonly firstNameAttr = "firstname";
@@ -36,7 +36,7 @@ export class UserDaoDynamo implements UserDao {
   ): Promise<void> {
     console.log("Entering userDaoDynamo.createUser()");
     const params = {
-      TableName: this.tableName,
+      TableName: this.userTable,
       Item: {
         [this.aliasAttr]: alias,
         [this.passwordAttr]: await this.hashWithSalt(password),
@@ -51,7 +51,7 @@ export class UserDaoDynamo implements UserDao {
   async verifyPassword(alias: string, inputPassword: string): Promise<boolean> {
     console.log("Entering userDaoDynamo.verifyPassword()");
     const params = {
-      TableName: this.tableName,
+      TableName: this.userTable,
       Key: { [this.aliasAttr]: alias },
     };
     const result = await this.client.send(new GetCommand(params));
@@ -61,7 +61,7 @@ export class UserDaoDynamo implements UserDao {
   async getUserFromAlias(alias: string): Promise<User | null> {
     console.log("Entering userDaoDynamo.getUserFromAlias()");
     const params = {
-      TableName: this.tableName,
+      TableName: this.userTable,
       Key: { [this.aliasAttr]: alias },
     };
     const result = await this.client.send(new GetCommand(params));
@@ -73,63 +73,5 @@ export class UserDaoDynamo implements UserDao {
           result.Item[this.aliasAttr],
           result.Item[this.imageUrlAttr]
         );
-  }
-
-  async getUserFromToken(token: string): Promise<User | null> {
-    console.log("Entering userDaoDynamo.getUserFromToken()");
-    const params = {
-      TableName: this.tableName,
-      IndexName: this.tokenIndex,
-      KeyConditionExpression: "#token = :token",
-      ExpressionAttributeNames: {
-        "#token": this.tokenAttr,
-      },
-      ExpressionAttributeValues: {
-        ":token": token,
-      },
-    };
-    const result = await this.client.send(new QueryCommand(params));
-    if (!result.Items || result.Items.length === 0) {
-      console.log(" - No user found for the given token.");
-      return null;
-    }
-    const item = result.Items[0];
-    return new User(item[this.firstNameAttr], item[this.lastNameAttr], item[this.aliasAttr], item[this.imageUrlAttr]);
-  }
-
-  async setAuth(alias: string, token: string, timestamp: number): Promise<void> {
-    console.log("Entering userDaoDynamo.setAuth()");
-    const params = {
-      TableName: this.tableName,
-      Key: { [this.aliasAttr]: alias },
-      UpdateExpression: "SET #token = :token, #timestamp = :timestamp",
-      ExpressionAttributeNames: {
-        "#token": this.tokenAttr,
-        "#timestamp": this.timestampAttr,
-      },
-      ExpressionAttributeValues: {
-        ":token": token,
-        ":timestamp": timestamp,
-      },
-    };
-    await this.client.send(new UpdateCommand(params));
-  }
-
-  async deleteAuth(alias: string): Promise<void> {
-    console.log("Entering userDaoDynamo.deleteAuth()");
-    const params = {
-      TableName: this.tableName,
-      Key: { [this.aliasAttr]: alias },
-      UpdateExpression: "SET #token = :token, #timestamp = :timestamp",
-      ExpressionAttributeNames: {
-        "#token": this.tokenAttr,
-        "#timestamp": this.timestampAttr,
-      },
-      ExpressionAttributeValues: {
-        ":token": "null",
-        ":timestamp": Date.now(),
-      },
-    };
-    await this.client.send(new UpdateCommand(params));
   }
 }

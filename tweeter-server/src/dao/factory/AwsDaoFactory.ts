@@ -1,3 +1,5 @@
+import { AuthDao } from "../auth/AuthDao";
+import { AuthDaoDynamo } from "../auth/AuthDaoDynamo";
 import { FileDao } from "../file/FileDao";
 import { FileDaoS3 } from "../file/FileDaoS3";
 import { FollowDao } from "../follow/FollowDao";
@@ -20,5 +22,8 @@ export class AwsDaoFactory implements DaoFactory {
   }
   getUserDao(): UserDao {
     return new UserDaoDynamo();
+  }
+  getAuthDao(): AuthDao {
+    return new AuthDaoDynamo();
   }
 }
