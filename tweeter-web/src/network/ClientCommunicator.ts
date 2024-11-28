@@ -20,7 +20,7 @@ export class ClientCommunicator {
       });
     }
 
-    console.log(`The request body is '${JSON.stringify(req)}'`);
+    // console.log(`The request body is '${JSON.stringify(req)}'`);
 
     const url = this.getUrl(endpoint);
     const params = this.getParams("POST", headers, req ? JSON.stringify(req) : req);
