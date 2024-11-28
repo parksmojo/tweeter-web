@@ -1,9 +1,9 @@
-import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { FollowDao } from "./FollowDao";
 
 export class FollowDaoDynamo implements FollowDao {
-  private readonly tableName = "follow";
+  readonly tableName = "follow";
   private readonly indexName = "follow-index";
   private readonly followerAttr = "follower_alias";
   private readonly followeeAttr = "followee_alias";
@@ -41,5 +41,30 @@ export class FollowDaoDynamo implements FollowDao {
       Key: { [this.followerAttr]: follower, [this.followeeAttr]: followee },
     };
     await this.client.send(new DeleteCommand(params));
+  }
+
+  async getFollowCounts(alias: string): Promise<[number, number]> {
+    const params1 = {
+      TableName: this.tableName,
+      KeyConditionExpression: this.followerAttr + " = :loc",
+      ExpressionAttributeValues: {
+        ":loc": alias,
+      },
+    };
+    const output1 = await this.client.send(new QueryCommand(params1));
+    const params2 = {
+      TableName: this.tableName,
+      IndexName: this.indexName,
+      KeyConditionExpression: this.followeeAttr + " = :loc",
+      ExpressionAttributeValues: {
+        ":loc": alias,
+      },
+    };
+    const output2 = await this.client.send(new QueryCommand(params2));
+
+    const follows = output1.Items ? output1.Items.length : 0;
+    const followers = output2.Items ? output2.Items.length : 0;
+
+    return [follows, followers];
   }
 }

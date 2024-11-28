@@ -1,4 +1,4 @@
-import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UserDao } from "./UserDao";
 import { User } from "tweeter-shared";
@@ -11,6 +11,8 @@ export class UserDaoDynamo implements UserDao {
   private readonly firstNameAttr = "firstname";
   private readonly lastNameAttr = "lastname";
   private readonly imageUrlAttr = "imageurl";
+  private readonly followsCountAttr = "follows_count";
+  private readonly followersCountAttr = "followers_count";
 
   private client;
 
@@ -70,5 +72,32 @@ export class UserDaoDynamo implements UserDao {
           result.Item[this.aliasAttr],
           result.Item[this.imageUrlAttr]
         );
+  }
+
+  async setFollowCounts(alias: string, followsCount: number, followerCount: number): Promise<void> {
+    const params = {
+      TableName: this.userTable,
+      Key: { [this.aliasAttr]: alias },
+      UpdateExpression: "SET #followsCount = :newFollowsCount, #followerCount = :newFollowerCount",
+      ExpressionAttributeNames: {
+        "#followsCount": this.followsCountAttr,
+        "#followerCount": this.followersCountAttr,
+      },
+      ExpressionAttributeValues: {
+        ":newFollowsCount": followsCount,
+        ":newFollowerCount": followerCount,
+      },
+    };
+    await this.client.send(new UpdateCommand(params));
+  }
+
+  async getFollowCounts(alias: string): Promise<[number, number] | null> {
+    console.log("Entering userDaoDynamo.getFollowCounts()");
+    const params = {
+      TableName: this.userTable,
+      Key: { [this.aliasAttr]: alias },
+    };
+    const result = await this.client.send(new GetCommand(params));
+    return result.Item == undefined ? null : [result.Item[this.followsCountAttr], result.Item[this.followersCountAttr]];
   }
 }
