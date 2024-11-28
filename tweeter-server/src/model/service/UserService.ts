@@ -59,10 +59,12 @@ export class UserService {
     const fileName = alias + imageFileExtension;
     const imageUrl = await this.fileDao.putImage(fileName, imageStringBase64);
 
-    await this.userDao.createUser(firstName, lastName, alias, password, imageUrl);
-
     const user = new User(firstName, lastName, alias, imageUrl);
     const authToken = AuthToken.Generate();
+
+    await this.userDao.createUser(firstName, lastName, alias, password, imageUrl);
+    await this.userDao.setAuth(alias, authToken.token, authToken.timestamp);
+
     return [user.dto, authToken.dto];
   }
 
