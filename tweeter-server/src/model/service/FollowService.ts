@@ -1,6 +1,12 @@
-import { AuthToken, User, FakeData, Status, UserDto } from "tweeter-shared";
+import { User, FakeData, UserDto } from "tweeter-shared";
+import { DaoFactory } from "../../dao/factory/DaoFactory";
+import { Service } from "./Service";
 
-export class FollowService {
+export class FollowService extends Service {
+  constructor(daoFactory: DaoFactory) {
+    super(daoFactory);
+  }
+
   public async loadMoreFollowers(
     token: string,
     userAlias: string,

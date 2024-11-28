@@ -2,38 +2,33 @@ import { AuthToken, User, FakeData, UserDto, AuthTokenDto } from "tweeter-shared
 import { FileDao } from "../../dao/file/FileDao";
 import { UserDao } from "../../dao/user/UserDao";
 import { DaoFactory } from "../../dao/factory/DaoFactory";
-import { AuthDao } from "../../dao/auth/AuthDao";
+import { Service } from "./Service";
 
-export class UserService {
+export class UserService extends Service {
   private fileDao: FileDao;
   private userDao: UserDao;
-  private authDao: AuthDao;
-  private readonly authLifespan: number = 30000;
 
   constructor(daoFactory: DaoFactory) {
+    super(daoFactory);
     this.fileDao = daoFactory.getFileDao();
     this.userDao = daoFactory.getUserDao();
-    this.authDao = daoFactory.getAuthDao();
-  }
-
-  private async verifyAuth(token: string): Promise<void> {
-    const authToken = await this.authDao.getAuth(token);
-    if (!authToken) {
-      throw new Error("[Bad Request] Token not found");
-    }
-    const now = Date.now();
-    if (now - authToken?.timestamp < this.authLifespan) {
-      throw new Error("[Bad Request] Token expired");
-    }
-    await this.authDao.updateAuth(token);
   }
 
   public async getUser(token: string, alias: string): Promise<UserDto> {
-    const dto = FakeData.instance.findUserByAlias(alias)?.dto;
+    this.verifyAuth(token);
+    const dto = (await this.userDao.getUserFromAlias(alias))?.dto;
     if (!dto) {
       throw new Error("[Bad Request] User not found");
     }
     return dto;
+  }
+
+  public async followUser(token: string, selectedUser: UserDto): Promise<void> {
+    console.log(`Following user: ${selectedUser}`);
+  }
+
+  public async unfollowUser(token: string, selectedUser: UserDto): Promise<void> {
+    console.log(`Unollowing user: ${selectedUser}`);
   }
 
   public async getIsFollowerStatus(token: string, user: UserDto, selectedUser: UserDto): Promise<boolean> {
@@ -96,13 +91,5 @@ export class UserService {
   public async logout(token: string): Promise<void> {
     console.log("Entering userService.logout()");
     await this.authDao.deleteAuth(token);
-  }
-
-  public async followUser(token: string, selectedUser: UserDto): Promise<void> {
-    console.log(`Following user: ${selectedUser}`);
-  }
-
-  public async unfollowUser(token: string, selectedUser: UserDto): Promise<void> {
-    console.log(`Unollowing user: ${selectedUser}`);
   }
 }
