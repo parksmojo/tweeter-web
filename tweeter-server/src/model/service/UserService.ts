@@ -38,7 +38,7 @@ export class UserService {
       throw new Error("[Bad Request] No alias or password given");
     }
 
-    const user = await this.userDao.getUser(alias);
+    const user = await this.userDao.getUserFromAlias(alias);
     if (!user) {
       throw new Error("[Bad Request] User doesn't exist");
     }
@@ -48,6 +48,7 @@ export class UserService {
     }
 
     const authToken = AuthToken.Generate();
+    await this.userDao.setAuth(alias, authToken.token, authToken.timestamp);
     return [user.dto, authToken.dto];
   }
 
@@ -60,7 +61,7 @@ export class UserService {
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
     console.log("Entering userService.register()");
-    const existingUser = await this.userDao.getUser(alias);
+    const existingUser = await this.userDao.getUserFromAlias(alias);
     if (existingUser) {
       throw new Error("[Bad Request] User already exists");
     }
@@ -78,7 +79,14 @@ export class UserService {
   }
 
   public async logout(token: string): Promise<void> {
-    console.log(`Successfully logging out`);
+    console.log("Entering userService.logout()");
+    console.log(" - Logging out token:", token);
+
+    const user = await this.userDao.getUserFromToken(token);
+    if (!user) {
+      throw new Error("[Bad Request] User doesn't exist");
+    }
+    await this.userDao.deleteAuth(user!.alias);
   }
 
   public async followUser(token: string, selectedUser: UserDto): Promise<void> {
