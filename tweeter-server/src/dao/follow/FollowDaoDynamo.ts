@@ -1,6 +1,7 @@
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { FollowDao } from "./FollowDao";
+import { UserDto } from "tweeter-shared";
 
 export class FollowDaoDynamo implements FollowDao {
   readonly tableName = "follow";
@@ -66,5 +67,54 @@ export class FollowDaoDynamo implements FollowDao {
     const followers = output2.Items ? output2.Items.length : 0;
 
     return [follows, followers];
+  }
+
+  async getFollowerPage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
+    const params = {
+      KeyConditionExpression: this.followeeAttr + " = :loc",
+      ExpressionAttributeValues: {
+        ":loc": alias,
+      },
+      TableName: this.tableName,
+      IndexName: this.indexName,
+      Limit: pageSize,
+      ExclusiveStartKey:
+        lastItem === null
+          ? undefined
+          : {
+              [this.followerAttr]: lastItem.alias,
+              [this.followeeAttr]: alias,
+            },
+    };
+    const items: string[] = [];
+    const data = await this.client.send(new QueryCommand(params));
+    const hasMorePages = data.LastEvaluatedKey !== undefined;
+    data.Items?.forEach((item) => items.push(item[this.followerAttr]));
+
+    return [items, hasMorePages];
+  }
+
+  async getFolloweePage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
+    const params = {
+      KeyConditionExpression: this.followerAttr + " = :loc",
+      ExpressionAttributeValues: {
+        ":loc": alias,
+      },
+      TableName: this.tableName,
+      Limit: pageSize,
+      ExclusiveStartKey:
+        lastItem === null
+          ? undefined
+          : {
+              [this.followeeAttr]: lastItem.alias,
+              [this.followerAttr]: alias,
+            },
+    };
+    const items: string[] = [];
+    const data = await this.client.send(new QueryCommand(params));
+    const hasMorePages = data.LastEvaluatedKey !== undefined;
+    data.Items?.forEach((item) => items.push(item[this.followeeAttr]));
+
+    return [items, hasMorePages];
   }
 }

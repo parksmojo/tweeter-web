@@ -1,4 +1,4 @@
-import { AuthToken, User, FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
+import { AuthToken, User, UserDto, AuthTokenDto } from "tweeter-shared";
 import { FileDao } from "../../dao/file/FileDao";
 import { UserDao } from "../../dao/user/UserDao";
 import { DaoFactory } from "../../dao/factory/DaoFactory";
@@ -19,7 +19,7 @@ export class UserService extends Service {
 
   public async getUser(token: string, alias: string): Promise<UserDto> {
     await this.verifyAuth(token);
-    const dto = (await this.userDao.getUserFromAlias(alias))?.dto;
+    const dto = await this.userDao.getUserFromAlias(alias);
     if (!dto) {
       throw new Error("[Bad Request] User not found");
     }
@@ -93,7 +93,7 @@ export class UserService extends Service {
 
     const authToken = AuthToken.Generate();
     await this.authDao.setAuth(alias, authToken.token, authToken.timestamp);
-    return [user.dto, authToken.dto];
+    return [user, authToken.dto];
   }
 
   public async register(
