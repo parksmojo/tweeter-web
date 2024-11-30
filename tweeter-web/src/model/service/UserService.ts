@@ -58,7 +58,7 @@ export class UserService {
     console.log(`Successfully logging in ${alias}`);
     const request: LoginRequest = {
       token: "",
-      alias: alias,
+      alias: "@" + alias,
       password: password,
     };
     const [user, authToken] = await this.server.login(request);
@@ -84,7 +84,7 @@ export class UserService {
       token: "",
       firstName: firstName,
       lastName: lastName,
-      alias: alias,
+      alias: "@" + alias,
       password: password,
       imageStringBase64: imageStringBase64,
       imageFileExtension: imageFileExtension,
