@@ -38,7 +38,7 @@ export class StatusService {
     console.log("Service posting status");
     const request: PostStatusRequest = {
       token: authToken.token,
-      newStatus: newStatus,
+      newStatus: newStatus.dto,
     };
     await this.server.postStatus(request);
   }
