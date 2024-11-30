@@ -21,7 +21,7 @@ export class FollowService extends Service {
     lastItem: UserDto | null,
     getPage: (userAlias: string, pageSize: number, lastItem: UserDto | null) => Promise<[string[], boolean]>
   ): Promise<[UserDto[], boolean]> {
-    this.verifyAuth(token);
+    await this.verifyAuth(token);
 
     const [followerAliases, hasMore] = await getPage(userAlias, pageSize, lastItem);
 
