@@ -15,41 +15,41 @@ export class FollowDaoDynamo implements FollowDao {
     this.client = DynamoDBDocumentClient.from(new DynamoDBClient());
   }
 
-  async createFollow(follower: UserDto, followee: UserDto): Promise<void> {
+  async createFollow(follower: string, followee: string): Promise<void> {
     const params = {
       TableName: this.tableName,
       Item: {
-        [this.followerAttr]: JSON.stringify(follower),
-        [this.followeeAttr]: JSON.stringify(followee),
+        [this.followerAttr]: follower,
+        [this.followeeAttr]: followee,
       },
     };
     await this.client.send(new PutCommand(params));
   }
 
-  async follows(follower: UserDto, followee: UserDto): Promise<boolean> {
-    console.log(`Checking if ${follower.alias} follows ${followee.alias}`);
+  async follows(follower: string, followee: string): Promise<boolean> {
+    console.log(`Checking if ${follower} follows ${followee}`);
     const params = {
       TableName: this.tableName,
-      Key: { [this.followerAttr]: JSON.stringify(follower), [this.followeeAttr]: JSON.stringify(followee) },
+      Key: { [this.followerAttr]: follower, [this.followeeAttr]: followee },
     };
     const output = await this.client.send(new GetCommand(params));
     return output.Item !== undefined;
   }
 
-  async deleteFollow(follower: UserDto, followee: UserDto): Promise<void> {
+  async deleteFollow(follower: string, followee: string): Promise<void> {
     const params = {
       TableName: this.tableName,
-      Key: { [this.followerAttr]: JSON.stringify(follower), [this.followeeAttr]: JSON.stringify(followee) },
+      Key: { [this.followerAttr]: follower, [this.followeeAttr]: followee },
     };
     await this.client.send(new DeleteCommand(params));
   }
 
-  async getFollowCounts(user: UserDto): Promise<[number, number]> {
+  async getFollowCounts(alias: string): Promise<[number, number]> {
     const params1 = {
       TableName: this.tableName,
       KeyConditionExpression: this.followerAttr + " = :loc",
       ExpressionAttributeValues: {
-        ":loc": JSON.stringify(user),
+        ":loc": alias,
       },
     };
     const output1 = await this.client.send(new QueryCommand(params1));
@@ -58,7 +58,7 @@ export class FollowDaoDynamo implements FollowDao {
       IndexName: this.indexName,
       KeyConditionExpression: this.followeeAttr + " = :loc",
       ExpressionAttributeValues: {
-        ":loc": JSON.stringify(user),
+        ":loc": alias,
       },
     };
     const output2 = await this.client.send(new QueryCommand(params2));
@@ -69,11 +69,11 @@ export class FollowDaoDynamo implements FollowDao {
     return [follows, followers];
   }
 
-  async getFollowerPage(user: UserDto, pageSize: number, lastItem: UserDto | null): Promise<[UserDto[], boolean]> {
+  async getFollowerPage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
     const params = {
       KeyConditionExpression: this.followeeAttr + " = :loc",
       ExpressionAttributeValues: {
-        ":loc": JSON.stringify(user),
+        ":loc": alias,
       },
       TableName: this.tableName,
       IndexName: this.indexName,
@@ -83,22 +83,22 @@ export class FollowDaoDynamo implements FollowDao {
           ? undefined
           : {
               [this.followerAttr]: lastItem.alias,
-              [this.followeeAttr]: JSON.stringify(user),
+              [this.followeeAttr]: alias,
             },
     };
-    const items: UserDto[] = [];
+    const items: string[] = [];
     const data = await this.client.send(new QueryCommand(params));
     const hasMorePages = data.LastEvaluatedKey !== undefined;
-    data.Items?.forEach((item) => items.push(JSON.parse(item[this.followerAttr])));
+    data.Items?.forEach((item) => items.push(item[this.followerAttr]));
 
     return [items, hasMorePages];
   }
 
-  async getFolloweePage(user: UserDto, pageSize: number, lastItem: UserDto | null): Promise<[UserDto[], boolean]> {
+  async getFolloweePage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
     const params = {
       KeyConditionExpression: this.followerAttr + " = :loc",
       ExpressionAttributeValues: {
-        ":loc": JSON.stringify(user),
+        ":loc": alias,
       },
       TableName: this.tableName,
       Limit: pageSize,
@@ -107,28 +107,29 @@ export class FollowDaoDynamo implements FollowDao {
           ? undefined
           : {
               [this.followeeAttr]: lastItem.alias,
-              [this.followerAttr]: JSON.stringify(user),
+              [this.followerAttr]: alias,
             },
     };
-    const items: UserDto[] = [];
+    const items: string[] = [];
     const data = await this.client.send(new QueryCommand(params));
     const hasMorePages = data.LastEvaluatedKey !== undefined;
-    data.Items?.forEach((item) => items.push(JSON.parse(item[this.followeeAttr])));
+    data.Items?.forEach((item) => items.push(item[this.followeeAttr]));
 
     return [items, hasMorePages];
   }
 
-  async getAllFollows(user: UserDto): Promise<string[]> {
+  async getAllFollowers(alias: string): Promise<string[]> {
     const params = {
-      KeyConditionExpression: this.followerAttr + " = :loc",
-      ExpressionAttributeValues: {
-        ":loc": JSON.stringify(user),
-      },
       TableName: this.tableName,
+      IndexName: this.indexName,
+      KeyConditionExpression: this.followeeAttr + " = :loc",
+      ExpressionAttributeValues: {
+        ":loc": alias,
+      },
     };
     const items: string[] = [];
     const data = await this.client.send(new QueryCommand(params));
-    data.Items?.forEach((item) => items.push(item[this.followeeAttr]));
+    data.Items?.forEach((item) => items.push(item[this.followerAttr]));
 
     return items;
   }

@@ -1,17 +1,14 @@
-import { Status, StatusDto, User, UserDto } from "tweeter-shared";
+import { StatusDto, UserDto } from "tweeter-shared";
 import { StatusDao } from "./StatusDao";
 import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 export class StatusDaoDynamo implements StatusDao {
-  private readonly statusTableName = "status";
+  private readonly tableName = "story";
   private readonly userAttr = "author";
   private readonly timestampAttr = "posttime";
   private readonly postAttr = "post";
   private readonly segmentsAttr = "segments";
-
-  private readonly feedTableName = "feed";
-  private readonly aliasAttr = "alias";
 
   private client;
 
@@ -21,7 +18,7 @@ export class StatusDaoDynamo implements StatusDao {
 
   async savePost(status: StatusDto): Promise<void> {
     const params = {
-      TableName: this.statusTableName,
+      TableName: this.tableName,
       Item: {
         [this.userAttr]: JSON.stringify(status.user),
         [this.timestampAttr]: status.timestamp,
@@ -38,7 +35,7 @@ export class StatusDaoDynamo implements StatusDao {
       ExpressionAttributeValues: {
         ":loc": JSON.stringify(user),
       },
-      TableName: this.statusTableName,
+      TableName: this.tableName,
       Limit: pageSize,
       ExclusiveStartKey:
         lastItem === null

@@ -27,53 +27,48 @@ export class UserService extends Service {
   }
 
   private async updateFollowCounts(alias: string): Promise<void> {
-    const user = await this.userDao.getUserFromAlias(alias);
-    if (!user) {
-      throw new Error("[Bad Request] User not found");
-    }
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user);
+    const [followsCount, followerCount] = await this.followDao.getFollowCounts(alias);
     this.userDao.setFollowCounts(alias, followsCount, followerCount);
   }
 
   private async changeFollow(
     token: string,
     selectedUser: UserDto,
-    followFunc: (follower: UserDto, followee: UserDto) => Promise<void>
+    followFunc: (follower: string, followee: string) => Promise<void>
   ): Promise<void> {
     await this.verifyAuth(token);
     const followerAlias = (await this.authDao.getAliasFromAuth(token))!;
-    const follower = (await this.userDao.getUserFromAlias(followerAlias))!;
-    await followFunc(follower, selectedUser);
+    await followFunc(followerAlias, selectedUser.alias);
     this.updateFollowCounts(followerAlias);
     this.updateFollowCounts(selectedUser.alias);
   }
 
   public async followUser(token: string, selectedUser: UserDto): Promise<void> {
-    await this.changeFollow(token, selectedUser, (follower: UserDto, followee: UserDto) =>
+    await this.changeFollow(token, selectedUser, (follower: string, followee: string) =>
       this.followDao.createFollow(follower, followee)
     );
   }
 
   public async unfollowUser(token: string, selectedUser: UserDto): Promise<void> {
-    await this.changeFollow(token, selectedUser, (follower: UserDto, followee: UserDto) =>
+    await this.changeFollow(token, selectedUser, (follower: string, followee: string) =>
       this.followDao.deleteFollow(follower, followee)
     );
   }
 
   public async getIsFollowerStatus(token: string, user: UserDto, selectedUser: UserDto): Promise<boolean> {
     await this.verifyAuth(token);
-    return this.followDao.follows(user, selectedUser);
+    return this.followDao.follows(user.alias, selectedUser.alias);
   }
 
   public async getFolloweeCount(token: string, user: UserDto): Promise<number> {
     await this.verifyAuth(token);
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user);
+    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user.alias);
     return followsCount;
   }
 
   public async getFollowerCount(token: string, user: UserDto): Promise<number> {
     await this.verifyAuth(token);
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user);
+    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user.alias);
     return followerCount;
   }
 

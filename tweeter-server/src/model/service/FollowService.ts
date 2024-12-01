@@ -19,17 +19,13 @@ export class FollowService extends Service {
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null,
-    getPage: (userAlias: UserDto, pageSize: number, lastItem: UserDto | null) => Promise<[UserDto[], boolean]>
+    getPage: (userAlias: string, pageSize: number, lastItem: UserDto | null) => Promise<[string[], boolean]>
   ): Promise<[UserDto[], boolean]> {
     await this.verifyAuth(token);
 
-    const user = await this.userDao.getUserFromAlias(userAlias);
-    if (!user) {
-      throw new Error(`[Bad Request] User ${userAlias} not found`);
-    }
-    const [follows, hasMore] = await getPage(user, pageSize, lastItem);
+    const [follows, hasMore] = await getPage(userAlias, pageSize, lastItem);
 
-    const followers = await Promise.all(follows.map((user) => this.userDao.getUserFromAlias(user.alias)));
+    const followers = await Promise.all(follows.map((alias) => this.userDao.getUserFromAlias(alias)));
 
     return [followers.filter((user): user is UserDto => !!user), hasMore];
   }
@@ -40,8 +36,8 @@ export class FollowService extends Service {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    return await this.loadMoreFollows(token, userAlias, pageSize, lastItem, (user: UserDto, count, last) =>
-      this.followDao.getFollowerPage(user, count, last)
+    return await this.loadMoreFollows(token, userAlias, pageSize, lastItem, () =>
+      this.followDao.getFollowerPage(userAlias, pageSize, lastItem)
     );
   }
 
