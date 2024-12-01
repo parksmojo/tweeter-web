@@ -1,10 +1,17 @@
 import { Status, StatusDto, FakeData } from "tweeter-shared";
 import { Service } from "./Service";
 import { DaoFactory } from "../../dao/factory/DaoFactory";
+import { StatusDao } from "../../dao/status/StatusDao";
+import { UserDao } from "../../dao/user/UserDao";
 
 export class StatusService extends Service {
+  private statusDao: StatusDao;
+  private userDao: UserDao;
+
   constructor(daoFactory: DaoFactory) {
     super(daoFactory);
+    this.statusDao = daoFactory.getStatusDao();
+    this.userDao = daoFactory.getUserDao();
   }
 
   public async loadMoreFeedItems(
@@ -22,7 +29,14 @@ export class StatusService extends Service {
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
-    return await this.getFakeData(lastItem, pageSize);
+    await this.verifyAuth(token);
+
+    const user = await this.userDao.getUserFromAlias(userAlias);
+    if (!user) {
+      throw new Error("[Bad Request] User not found");
+    }
+
+    return this.statusDao.getStoryPage(user, pageSize, lastItem);
   }
 
   private async getFakeData(lastItem: StatusDto | null, pageSize: number): Promise<[StatusDto[], boolean]> {
@@ -32,6 +46,7 @@ export class StatusService extends Service {
   }
 
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
-    console.log("Posting status:", newStatus);
+    await this.verifyAuth(token);
+    await this.statusDao.savePost(newStatus);
   }
 }
