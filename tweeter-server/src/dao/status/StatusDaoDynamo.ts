@@ -46,6 +46,8 @@ export class StatusDaoDynamo implements StatusDao {
   }
 
   async getStoryPage(user: UserDto, pageSize: number, lastItem: StatusDto | null): Promise<[StatusDto[], boolean]> {
+    console.log(`Getting story after:`, lastItem);
+    console.log("LastItem user:", lastItem?.user);
     const params = {
       KeyConditionExpression: this.userAttr + " = :loc",
       ExpressionAttributeValues: {
@@ -59,8 +61,6 @@ export class StatusDaoDynamo implements StatusDao {
           : {
               [this.userAttr]: JSON.stringify(lastItem.user),
               [this.timestampAttr]: lastItem.timestamp,
-              [this.postAttr]: lastItem.post,
-              [this.segmentsAttr]: JSON.stringify(lastItem.segments),
             },
     };
     const items: StatusDto[] = [];
@@ -90,10 +90,8 @@ export class StatusDaoDynamo implements StatusDao {
         lastItem === null
           ? undefined
           : {
-              [this.userAttr]: JSON.stringify(lastItem.user),
+              [this.aliasAttr]: alias,
               [this.timestampAttr]: lastItem.timestamp,
-              [this.postAttr]: lastItem.post,
-              [this.segmentsAttr]: JSON.stringify(lastItem.segments),
             },
     };
     const items: StatusDto[] = [];
