@@ -6,23 +6,26 @@ import {
   Status,
   User,
 } from "tweeter-shared";
+import { ServerFacade } from "../../../src/network/ServerFacade";
 import { StatusService } from "../../../src/model/service/StatusService";
 import "isomorphic-fetch";
 
 describe("ServerFacade", () => {
   let statusService: StatusService;
-  let authToken: AuthToken;
+  let serverFacade: ServerFacade;
+  let testAuth: AuthToken;
+  let testUser: User;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     statusService = new StatusService();
-    authToken = new AuthToken("token", 100);
+    serverFacade = new ServerFacade();
+    [testUser, testAuth] = await serverFacade.login({ alias: "@TestGuy1", password: "TestGuy1", token: "" });
   });
 
   it("retrieves the story", async () => {
-    const [statusList, hasMore] = await statusService.loadMoreStoryItems(authToken, "@alias", 10, null);
+    const [statusList, hasMore] = await statusService.loadMoreStoryItems(testAuth, testUser.alias, 10, null);
     expect(statusList).not.toBeNull();
-    expect(statusList.length).not.toBe(0);
-    expect(statusList.at(0)).toBeInstanceOf(Status);
-    expect(hasMore).toBeTruthy();
+    expect(statusList.length).toBe(0);
+    expect(hasMore).toBeFalsy();
   });
 });
