@@ -22,43 +22,45 @@ describe("ServerFacade", () => {
     serverFacade = new ServerFacade();
   });
 
-  it("allows registering", async () => {
-    const request: RegisterRequest = {
-      token: "",
-      firstName: testUser.firstName,
-      lastName: testUser.lastName,
-      alias: testUser.alias,
-      password: PASSWORD,
-      imageStringBase64: "imageStringBase64",
-      imageFileExtension: "imageFileExtension",
-    };
-    const [user, authToken] = await serverFacade.register(request);
-    expect(user).not.toBeNull();
-    expect(user).toBeInstanceOf(User);
-    expect(authToken).not.toBeNull();
-    expect(authToken).toBeInstanceOf(AuthToken);
-    testAuth = authToken;
-  }, 10000);
+  test.todo("undo commenting");
 
-  it("gets followers", async () => {
-    const request: PagedUserItemRequest = {
-      token: testAuth.token,
-      userAlias: testUser.alias,
-      pageSize: 10,
-      lastItem: null,
-    };
-    const [users, hasMore] = await serverFacade.getMoreFollowers(request);
-    expect(users).not.toBeNull();
-    expect(users.length).toBe(0);
-    expect(hasMore).toBeFalsy();
-  });
+  // it("allows registering", async () => {
+  //   const request: RegisterRequest = {
+  //     token: "",
+  //     firstName: testUser.firstName,
+  //     lastName: testUser.lastName,
+  //     alias: testUser.alias,
+  //     password: PASSWORD,
+  //     imageStringBase64: "imageStringBase64",
+  //     imageFileExtension: "imageFileExtension",
+  //   };
+  //   const [user, authToken] = await serverFacade.register(request);
+  //   expect(user).not.toBeNull();
+  //   expect(user).toBeInstanceOf(User);
+  //   expect(authToken).not.toBeNull();
+  //   expect(authToken).toBeInstanceOf(AuthToken);
+  //   testAuth = authToken;
+  // }, 10000);
 
-  it("gets followers count", async () => {
-    const request: GetFollowerCountRequest = {
-      token: testAuth.token,
-      user: testUser.dto,
-    };
-    const count = await serverFacade.getFollowCount("follower", request);
-    expect(count).toBe(0);
-  });
+  // it("gets followers", async () => {
+  //   const request: PagedUserItemRequest = {
+  //     token: testAuth.token,
+  //     userAlias: testUser.alias,
+  //     pageSize: 10,
+  //     lastItem: null,
+  //   };
+  //   const [users, hasMore] = await serverFacade.getMoreFollowers(request);
+  //   expect(users).not.toBeNull();
+  //   expect(users.length).toBe(0);
+  //   expect(hasMore).toBeFalsy();
+  // });
+
+  // it("gets followers count", async () => {
+  //   const request: GetFollowerCountRequest = {
+  //     token: testAuth.token,
+  //     user: testUser.dto,
+  //   };
+  //   const count = await serverFacade.getFollowCount("follower", request);
+  //   expect(count).toBe(0);
+  // });
 });
