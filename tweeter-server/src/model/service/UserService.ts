@@ -27,7 +27,7 @@ export class UserService extends Service {
   }
 
   private async updateFollowCounts(alias: string): Promise<void> {
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(alias);
+    const [followsCount, followerCount] = await this.followDao.getLiveFollowCounts(alias);
     this.userDao.setFollowCounts(alias, followsCount, followerCount);
   }
 
@@ -62,13 +62,13 @@ export class UserService extends Service {
 
   public async getFolloweeCount(token: string, user: UserDto): Promise<number> {
     await this.verifyAuth(token);
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user.alias);
+    const [followsCount, followerCount] = await this.userDao.getFollowCounts(user.alias);
     return followsCount;
   }
 
   public async getFollowerCount(token: string, user: UserDto): Promise<number> {
     await this.verifyAuth(token);
-    const [followsCount, followerCount] = await this.followDao.getFollowCounts(user.alias);
+    const [followsCount, followerCount] = await this.userDao.getFollowCounts(user.alias);
     return followerCount;
   }
 

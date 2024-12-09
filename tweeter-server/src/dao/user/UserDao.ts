@@ -5,5 +5,5 @@ export interface UserDao {
   getUserFromAlias(alias: string): Promise<UserDto | null>;
   verifyPassword(alias: string, inputPassword: string): Promise<boolean>;
   setFollowCounts(alias: string, followsCount: number, followerCount: number): Promise<void>;
-  getFollowCounts(alias: string): Promise<[number, number] | null>;
+  getFollowCounts(alias: string): Promise<[number, number]>;
 }

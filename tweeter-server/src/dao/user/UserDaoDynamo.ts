@@ -93,13 +93,13 @@ export class UserDaoDynamo implements UserDao {
     await this.client.send(new UpdateCommand(params));
   }
 
-  async getFollowCounts(alias: string): Promise<[number, number] | null> {
+  async getFollowCounts(alias: string): Promise<[number, number]> {
     console.log("Entering userDaoDynamo.getFollowCounts()");
     const params = {
       TableName: this.userTable,
       Key: { [this.aliasAttr]: alias },
     };
     const result = await this.client.send(new GetCommand(params));
-    return result.Item == undefined ? null : [result.Item[this.followsCountAttr], result.Item[this.followersCountAttr]];
+    return [result.Item![this.followsCountAttr], result.Item![this.followersCountAttr]];
   }
 }

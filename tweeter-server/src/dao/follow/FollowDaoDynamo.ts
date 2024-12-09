@@ -44,7 +44,7 @@ export class FollowDaoDynamo implements FollowDao {
     await this.client.send(new DeleteCommand(params));
   }
 
-  async getFollowCounts(alias: string): Promise<[number, number]> {
+  async getLiveFollowCounts(alias: string): Promise<[number, number]> {
     const params1 = {
       TableName: this.tableName,
       KeyConditionExpression: this.followerAttr + " = :loc",
