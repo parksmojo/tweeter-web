@@ -2,6 +2,7 @@ import { StatusDto, UserDto } from "tweeter-shared";
 import { StatusDao } from "./StatusDao";
 import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 export class StatusDaoDynamo implements StatusDao {
   private readonly storyTableName = "story";
@@ -13,12 +14,14 @@ export class StatusDaoDynamo implements StatusDao {
   private readonly segmentsAttr = "segments";
 
   private client;
+  private sqsClient;
 
   constructor() {
     this.client = DynamoDBDocumentClient.from(new DynamoDBClient());
+    this.sqsClient = new SQSClient();
   }
 
-  async savePost(status: StatusDto, followers: string[]): Promise<void> {
+  async savePost(status: StatusDto): Promise<void> {
     const params = {
       TableName: this.storyTableName,
       Item: {
@@ -29,20 +32,29 @@ export class StatusDaoDynamo implements StatusDao {
       },
     };
     await this.client.send(new PutCommand(params));
-    for (let follower of followers) {
-      await this.client.send(
-        new PutCommand({
-          TableName: this.feedTableName,
-          Item: {
-            [this.aliasAttr]: follower,
-            [this.userAttr]: JSON.stringify(status.user),
-            [this.timestampAttr]: status.timestamp,
-            [this.postAttr]: status.post,
-            [this.segmentsAttr]: JSON.stringify(status.segments),
-          },
-        })
-      );
-    }
+  }
+
+  async addToFeed(follower: string, status: StatusDto): Promise<void> {
+    await this.client.send(
+      new PutCommand({
+        TableName: this.feedTableName,
+        Item: {
+          [this.aliasAttr]: follower,
+          [this.userAttr]: JSON.stringify(status.user),
+          [this.timestampAttr]: status.timestamp,
+          [this.postAttr]: status.post,
+          [this.segmentsAttr]: JSON.stringify(status.segments),
+        },
+      })
+    );
+  }
+
+  async sendToFeeds(status: StatusDto): Promise<void> {
+    const params = {
+      MessageBody: JSON.stringify(status),
+      QueueUrl: "https://sqs.us-west-2.amazonaws.com/905417999987/TweeterQueue",
+    };
+    await this.sqsClient.send(new SendMessageCommand(params));
   }
 
   async getStoryPage(user: UserDto, pageSize: number, lastItem: StatusDto | null): Promise<[StatusDto[], boolean]> {

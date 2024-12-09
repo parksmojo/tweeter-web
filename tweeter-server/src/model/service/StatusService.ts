@@ -43,16 +43,16 @@ export class StatusService extends Service {
     return await this.statusDao.getStoryPage(user, pageSize, lastItem);
   }
 
-  private async getFakeData(lastItem: StatusDto | null, pageSize: number): Promise<[StatusDto[], boolean]> {
-    const [statuses, hasMore] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem), pageSize);
-    const statusDtos = statuses.map((status) => status.dto);
-    return [statusDtos, hasMore];
-  }
-
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
     await this.verifyAuth(token);
-    const userAlias = await this.authDao.getAliasFromAuth(token);
-    const followers = await this.followDao.getAllFollowers(userAlias!);
-    await this.statusDao.savePost(newStatus, followers);
+    await this.statusDao.savePost(newStatus);
+    await this.statusDao.sendToFeeds(newStatus);
+  }
+
+  public async updateFeeds(status: StatusDto) {
+    const followers = await this.followDao.getAllFollowers(status.user.alias);
+    for (let follower of followers) {
+      await this.statusDao.addToFeed(follower, status);
+    }
   }
 }
