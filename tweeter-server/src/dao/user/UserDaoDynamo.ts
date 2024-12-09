@@ -42,6 +42,8 @@ export class UserDaoDynamo implements UserDao {
         [this.firstNameAttr]: firstName,
         [this.lastNameAttr]: lastName,
         [this.imageUrlAttr]: imageUrl,
+        [this.followsCountAttr]: 0,
+        [this.followersCountAttr]: 0,
       },
     };
     await this.client.send(new PutCommand(params));

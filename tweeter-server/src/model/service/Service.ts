@@ -3,7 +3,7 @@ import { DaoFactory } from "../../dao/factory/DaoFactory";
 
 export abstract class Service {
   protected authDao: AuthDao;
-  private readonly authLifespan: number = 30000;
+  private readonly authLifespan: number = 600000;
 
   constructor(daoFactory: DaoFactory) {
     this.authDao = daoFactory.getAuthDao();
