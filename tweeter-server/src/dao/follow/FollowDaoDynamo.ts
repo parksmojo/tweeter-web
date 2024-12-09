@@ -69,7 +69,7 @@ export class FollowDaoDynamo implements FollowDao {
     return [follows, followers];
   }
 
-  async getFollowerPage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
+  async getFollowerPage(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]> {
     const params = {
       KeyConditionExpression: this.followeeAttr + " = :loc",
       ExpressionAttributeValues: {
@@ -82,7 +82,7 @@ export class FollowDaoDynamo implements FollowDao {
         lastItem === null
           ? undefined
           : {
-              [this.followerAttr]: lastItem.alias,
+              [this.followerAttr]: lastItem,
               [this.followeeAttr]: alias,
             },
     };
@@ -94,7 +94,7 @@ export class FollowDaoDynamo implements FollowDao {
     return [items, hasMorePages];
   }
 
-  async getFolloweePage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]> {
+  async getFolloweePage(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]> {
     const params = {
       KeyConditionExpression: this.followerAttr + " = :loc",
       ExpressionAttributeValues: {
@@ -106,7 +106,7 @@ export class FollowDaoDynamo implements FollowDao {
         lastItem === null
           ? undefined
           : {
-              [this.followeeAttr]: lastItem.alias,
+              [this.followeeAttr]: lastItem,
               [this.followerAttr]: alias,
             },
     };

@@ -19,11 +19,11 @@ export class FollowService extends Service {
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null,
-    getPage: (userAlias: string, pageSize: number, lastItem: UserDto | null) => Promise<[string[], boolean]>
+    getPage: (userAlias: string, pageSize: number, lastItem: string | null) => Promise<[string[], boolean]>
   ): Promise<[UserDto[], boolean]> {
     await this.verifyAuth(token);
 
-    const [follows, hasMore] = await getPage(userAlias, pageSize, lastItem);
+    const [follows, hasMore] = await getPage(userAlias, pageSize, lastItem?.alias ?? null);
 
     const followers = await Promise.all(follows.map((alias) => this.userDao.getUserFromAlias(alias)));
 
@@ -37,7 +37,7 @@ export class FollowService extends Service {
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
     return await this.loadMoreFollows(token, userAlias, pageSize, lastItem, () =>
-      this.followDao.getFollowerPage(userAlias, pageSize, lastItem)
+      this.followDao.getFollowerPage(userAlias, pageSize, lastItem?.alias ?? null)
     );
   }
 
@@ -47,8 +47,8 @@ export class FollowService extends Service {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    return await this.loadMoreFollows(token, userAlias, pageSize, lastItem, (user, count, last) =>
-      this.followDao.getFolloweePage(user, count, last)
+    return await this.loadMoreFollows(token, userAlias, pageSize, lastItem, () =>
+      this.followDao.getFolloweePage(userAlias, pageSize, lastItem?.alias ?? null)
     );
   }
 }

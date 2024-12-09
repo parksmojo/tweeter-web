@@ -14,7 +14,10 @@ const baseFollowerLastName = "Duck";
 const numbUsersToCreate = 10000;
 const numbFollowsToCreate = numbUsersToCreate;
 const batchSize = 25;
-const aliasList: string[] = Array.from({ length: numbUsersToCreate }, (_, i) => baseFollowerAlias + (i + 1));
+const aliasList: string[] = Array.from(
+  { length: numbUsersToCreate },
+  (_, i) => baseFollowerAlias + (i + 1).toString().padStart(5, "0")
+);
 
 const fillUserTableDao = new FillUserTableDao();
 const fillFollowTableDao = new FillFollowTableDao();
@@ -57,10 +60,11 @@ function createUserList(createdUserCount: number) {
   const limit = start + batchSize;
 
   for (let i = start; i < limit; ++i) {
+    const num = i.toString().padStart(5, "0");
     let user = new User(
-      `${baseFollowerFirstName}_${i}`,
-      `${baseFollowerLastName}_${i}`,
-      `${baseFollowerAlias}${i}`,
+      `${baseFollowerFirstName}_${num}`,
+      `${baseFollowerLastName}_${num}`,
+      `${baseFollowerAlias}${num}`,
       followerImageUrl
     );
 

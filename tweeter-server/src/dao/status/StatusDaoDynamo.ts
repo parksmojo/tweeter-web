@@ -34,6 +34,26 @@ export class StatusDaoDynamo implements StatusDao {
     await this.client.send(new PutCommand(params));
   }
 
+  async sendToFeeds(status: StatusDto): Promise<void> {
+    const params = {
+      MessageBody: JSON.stringify(status),
+      QueueUrl: "https://sqs.us-west-2.amazonaws.com/905417999987/FeedJobAssigner",
+    };
+    await this.sqsClient.send(new SendMessageCommand(params));
+  }
+
+  async sendFeedJob(status: StatusDto, followers: string[]): Promise<void> {
+    const messageBody = {
+      status,
+      followers,
+    };
+    const params = {
+      MessageBody: JSON.stringify(messageBody),
+      QueueUrl: "https://sqs.us-west-2.amazonaws.com/905417999987/FeedJobHandler",
+    };
+    await this.sqsClient.send(new SendMessageCommand(params));
+  }
+
   async addToFeed(follower: string, status: StatusDto): Promise<void> {
     await this.client.send(
       new PutCommand({
@@ -47,14 +67,6 @@ export class StatusDaoDynamo implements StatusDao {
         },
       })
     );
-  }
-
-  async sendToFeeds(status: StatusDto): Promise<void> {
-    const params = {
-      MessageBody: JSON.stringify(status),
-      QueueUrl: "https://sqs.us-west-2.amazonaws.com/905417999987/TweeterQueue",
-    };
-    await this.sqsClient.send(new SendMessageCommand(params));
   }
 
   async getStoryPage(user: UserDto, pageSize: number, lastItem: StatusDto | null): Promise<[StatusDto[], boolean]> {

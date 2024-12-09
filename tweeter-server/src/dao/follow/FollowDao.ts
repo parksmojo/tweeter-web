@@ -5,7 +5,7 @@ export interface FollowDao {
   follows(follower: string, followee: string): Promise<boolean>;
   deleteFollow(follower: string, followee: string): Promise<void>;
   getLiveFollowCounts(alias: string): Promise<[number, number]>;
-  getFollowerPage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]>;
-  getFolloweePage(alias: string, pageSize: number, lastItem: UserDto | null): Promise<[string[], boolean]>;
+  getFollowerPage(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]>;
+  getFolloweePage(alias: string, pageSize: number, lastItem: string | null): Promise<[string[], boolean]>;
   getAllFollowers(alias: string): Promise<string[]>;
 }

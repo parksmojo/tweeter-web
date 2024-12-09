@@ -6,8 +6,8 @@ export const handler = async function (event: any) {
   const statusService = new StatusService(new AwsDaoFactory());
   for (let i = 0; i < event.Records.length; ++i) {
     const { body } = event.Records[i];
-    const { status, followers } = JSON.parse(body);
-    await statusService.updateFeeds(status, followers);
+    const status: StatusDto = JSON.parse(body);
+    await statusService.makeFeedJobAssignments(status);
   }
   return {
     success: true,

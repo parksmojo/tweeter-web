@@ -49,8 +49,21 @@ export class StatusService extends Service {
     await this.statusDao.sendToFeeds(newStatus);
   }
 
-  public async updateFeeds(status: StatusDto) {
-    const followers = await this.followDao.getAllFollowers(status.user.alias);
+  public async makeFeedJobAssignments(status: StatusDto) {
+    console.log("Sending feed jobs for all followers");
+    let followers: string[] = [];
+    let hasMore = true;
+    let lastItem = null;
+    while (hasMore) {
+      [followers, hasMore] = await this.followDao.getFollowerPage(status.user.alias, 100, lastItem);
+      await this.statusDao.sendFeedJob(status, followers);
+      lastItem = followers.at(-1) ?? null;
+    }
+    console.log("Sent feed jobs for all followers");
+  }
+
+  public async updateFeeds(status: StatusDto, followers: string[]) {
+    console.log(`Updating feeds for users from ${followers[0]} to ${followers[followers.length - 1]}`);
     for (let follower of followers) {
       await this.statusDao.addToFeed(follower, status);
     }
