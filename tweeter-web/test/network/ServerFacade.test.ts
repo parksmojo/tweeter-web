@@ -13,14 +13,14 @@ describe("ServerFacade", () => {
   const PASSWORD = "TestPassword";
   const IMAGE_URL = "https://parker340bucket.s3.us-west-2.amazonaws.com/image/@TestGuy1png";
 
-  beforeAll(() => {
-    const rand = Math.floor(Math.random() * 1000000);
-    testUser = new User(FIRST_NAME + rand, LAST_NAME + rand, ALIAS + rand, IMAGE_URL);
-  });
+  // beforeAll(() => {
+  //   const rand = Math.floor(Math.random() * 1000000);
+  //   testUser = new User(FIRST_NAME + rand, LAST_NAME + rand, ALIAS + rand, IMAGE_URL);
+  // });
 
-  beforeEach(() => {
-    serverFacade = new ServerFacade();
-  });
+  // beforeEach(() => {
+  //   serverFacade = new ServerFacade();
+  // });
 
   test.todo("undo commenting");
 

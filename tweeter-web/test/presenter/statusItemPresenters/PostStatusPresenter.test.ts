@@ -4,6 +4,8 @@ import { PostStatusPresenter, PostStatusView } from "../../../src/presenters/sta
 import { NavbarView, NavbarPresenter } from "../../../src/presenters/userItemPresenters/NavbarPresenter";
 import { StatusService } from "../../../src/model/service/StatusService";
 import { AuthToken, Status, User } from "tweeter-shared";
+import { ServerFacade } from "../../../src/network/ServerFacade";
+import "isomorphic-fetch";
 
 describe("PostStatusPresenter", () => {
   let postStatusPresenter: PostStatusPresenter;
@@ -58,4 +60,24 @@ describe("PostStatusPresenter", () => {
     verify(mockPostStatusView.setPost("")).never();
     verify(mockPostStatusView.displayInfoMessage("Status posted!", 2000)).never();
   });
+
+  it("correctly posts a status to a users story", async () => {
+    mockPostStatusView = mock<PostStatusView>();
+    const mockPostStatusViewInstance = instance(mockPostStatusView);
+    const postStatusPresenterSpy = spy(new PostStatusPresenter(mockPostStatusViewInstance));
+    postStatusPresenter = instance(postStatusPresenterSpy);
+    when(postStatusPresenterSpy.statusService).thenReturn(new StatusService());
+
+    const serverFacade = new ServerFacade();
+    const [testUser, testAuth] = await serverFacade.login({ alias: "@TestGuy1", password: "TestGuy1", token: "" });
+    await postStatusPresenter.submitPost(post, testUser, testAuth);
+    verify(mockPostStatusView.displayInfoMessage("Status posted!", 2000));
+    const [statusList, hasMore] = await serverFacade.getMoreStory({
+      userAlias: testUser.alias,
+      token: testAuth.token,
+      pageSize: 999,
+      lastItem: null,
+    });
+    expect(statusList.at(-1)?.post).toBe(post);
+  }, 20000);
 });

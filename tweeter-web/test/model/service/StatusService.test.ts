@@ -16,11 +16,11 @@ describe("ServerFacade", () => {
   let testAuth: AuthToken;
   let testUser: User;
 
-  beforeEach(async () => {
-    statusService = new StatusService();
-    serverFacade = new ServerFacade();
-    [testUser, testAuth] = await serverFacade.login({ alias: "@TestGuy1", password: "TestGuy1", token: "" });
-  });
+  // beforeEach(async () => {
+  //   statusService = new StatusService();
+  //   serverFacade = new ServerFacade();
+  //   [testUser, testAuth] = await serverFacade.login({ alias: "@TestGuy1", password: "TestGuy1", token: "" });
+  // });
 
   test.todo("undo commenting");
 
