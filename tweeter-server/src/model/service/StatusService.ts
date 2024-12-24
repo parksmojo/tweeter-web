@@ -46,7 +46,12 @@ export class StatusService extends Service {
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
     await this.verifyAuth(token);
     await this.statusDao.savePost(newStatus);
-    await this.statusDao.sendToFeeds(newStatus);
+    // await this.statusDao.sendToFeeds(newStatus); Old sqs way of getting posts to feeds
+    const alias = await this.authDao.getAliasFromAuth(token);
+    const followers = await this.followDao.getAllFollowers(alias!);
+    for (let follower of followers) {
+      await this.statusDao.addToFeed(follower, newStatus);
+    }
   }
 
   public async makeFeedJobAssignments(status: StatusDto) {
