@@ -10,5 +10,8 @@
   "dependencies": {
     "rimraf": "^5.0.5",
     "vite-plugin-dts": "^3.7.3"
+  },
+  "scripts": {
+    "build": "cd tweeter-shared && npm run build && cd ../tweeter-web && npm run build"
   }
 }
