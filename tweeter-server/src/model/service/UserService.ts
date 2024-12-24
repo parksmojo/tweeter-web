@@ -26,6 +26,16 @@ export class UserService extends Service {
     return dto;
   }
 
+  public async getAllUsers(token: string, pageSize: number, lastItem: UserDto | null): Promise<[UserDto[], boolean]> {
+    await this.verifyAuth(token);
+
+    const [users, hasMore] = await this.userDao.getUsers(pageSize, lastItem?.alias ?? null);
+
+    const userDtos = await Promise.all(users.map((alias) => this.userDao.getUserFromAlias(alias)));
+
+    return [userDtos.filter((user): user is UserDto => !!user), hasMore];
+  }
+
   private async updateFollowCounts(alias: string): Promise<void> {
     const [followsCount, followerCount] = await this.followDao.getLiveFollowCounts(alias);
     this.userDao.setFollowCounts(alias, followsCount, followerCount);

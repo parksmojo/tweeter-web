@@ -17,5 +17,6 @@ tweeterFollow | lambda/user/FollowUserLambda.handler
 tweeterUnfollow | lambda/user/UnfollowUserLambda.handler
 tweeterUpdateFeeds | lambda/status/UpdateFeedsLambda.handler
 tweeterFeedJobs | lambda/status/FeedJobMakerLambda.handler
+tweeterGetAllUsers | lambda/user/GetAllUsersLambda.handler
 '
 LAMBDALAYER_ARN='arn:aws:lambda:us-west-2:905417999987:layer:tweeterServer:14'
