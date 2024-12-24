@@ -1,4 +1,4 @@
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UserDao } from "./UserDao";
 import { User, UserDto } from "tweeter-shared";
@@ -57,6 +57,25 @@ export class UserDaoDynamo implements UserDao {
     };
     const result = await this.client.send(new GetCommand(params));
     return result.Item == undefined ? false : await compare(inputPassword, result.Item[this.passwordAttr]);
+  }
+
+  async getUsers(pageSize: number, lastItem: string | null): Promise<[string[], boolean]> {
+    const params = {
+      TableName: this.userTable,
+      Limit: pageSize,
+      ExclusiveStartKey:
+        lastItem === null
+          ? undefined
+          : {
+              [this.aliasAttr]: lastItem,
+            },
+    };
+    const items: string[] = [];
+    const data = await this.client.send(new QueryCommand(params));
+    const hasMorePages = data.LastEvaluatedKey !== undefined;
+    data.Items?.forEach((item) => items.push(item[this.aliasAttr]));
+
+    return [items, hasMorePages];
   }
 
   async getUserFromAlias(alias: string): Promise<UserDto | null> {
