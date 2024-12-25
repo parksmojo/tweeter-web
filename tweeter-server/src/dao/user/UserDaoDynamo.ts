@@ -1,4 +1,11 @@
-import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+  QueryCommand,
+  ScanCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UserDao } from "./UserDao";
 import { User, UserDto } from "tweeter-shared";
@@ -71,7 +78,7 @@ export class UserDaoDynamo implements UserDao {
             },
     };
     const items: string[] = [];
-    const data = await this.client.send(new QueryCommand(params));
+    const data = await this.client.send(new ScanCommand(params));
     const hasMorePages = data.LastEvaluatedKey !== undefined;
     data.Items?.forEach((item) => items.push(item[this.aliasAttr]));
 
