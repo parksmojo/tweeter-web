@@ -9,6 +9,7 @@ import {
   RegisterRequest,
   TweeterRequest,
   FollowRequest,
+  PagedUserItemRequest,
 } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { ServerFacade } from "../../network/ServerFacade";
@@ -27,6 +28,20 @@ export class UserService {
       alias: alias,
     };
     return this.server.getUser(request);
+  }
+
+  public async loadMoreUsers(
+    authToken: AuthToken,
+    pageSize: number,
+    lastItem: User | null
+  ): Promise<[User[], boolean]> {
+    const request: PagedUserItemRequest = {
+      token: authToken.token,
+      userAlias: "",
+      pageSize: pageSize,
+      lastItem: lastItem === null ? null : lastItem.dto,
+    };
+    return this.server.getMoreUsers(request);
   }
 
   public async getIsFollowerStatus(authToken: AuthToken, user: User, selectedUser: User): Promise<boolean> {

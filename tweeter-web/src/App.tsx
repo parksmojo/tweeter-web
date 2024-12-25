@@ -14,6 +14,7 @@ import { Status, User } from "tweeter-shared";
 import ItemScroller from "./components/mainLayout/ItemScroller";
 import StatusItem from "./components/statusItem/StatusItem";
 import UserItem from "./components/userItem/UserItem";
+import { AllUserPresenter } from "./presenters/userItemPresenters/AllUserPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -71,6 +72,16 @@ const AuthenticatedRoutes = () => {
             <ItemScroller
               key={"followers"}
               presenterGenerator={(view: ItemView<User>) => new FollowerPresenter(view)}
+              itemComponentGenerator={(item: User) => <UserItem value={item} />}
+            />
+          }
+        />
+        <Route
+          path="users"
+          element={
+            <ItemScroller
+              key={"users"}
+              presenterGenerator={(view: ItemView<User>) => new AllUserPresenter(view)}
               itemComponentGenerator={(item: User) => <UserItem value={item} />}
             />
           }

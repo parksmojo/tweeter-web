@@ -37,6 +37,10 @@ export class ServerFacade {
     return await this.getMoreUserItems("follower", request);
   }
 
+  public async getMoreUsers(request: PagedUserItemRequest): Promise<[User[], boolean]> {
+    return await this.getMoreUserItems("user", request);
+  }
+
   private async getMoreUserItems(userType: string, request: PagedUserItemRequest): Promise<[User[], boolean]> {
     const response = await this.clientCommunicator.doPost<PagedUserItemRequest, PagedUserItemResponse>(
       request,
