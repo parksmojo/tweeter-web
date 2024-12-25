@@ -54,6 +54,9 @@ const AppNavbar = () => {
               <NavLink to="/followers">Followers</NavLink>
             </Nav.Item>
             <Nav.Item>
+              <NavLink to="/users">Users</NavLink>
+            </Nav.Item>
+            <Nav.Item>
               <NavLink id="logout" onClick={() => presenter.logOut(authToken!)} to={location.pathname}>
                 Logout
               </NavLink>

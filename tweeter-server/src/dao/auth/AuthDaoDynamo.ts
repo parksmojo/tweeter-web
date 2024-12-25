@@ -16,7 +16,7 @@ export class AuthDaoDynamo implements AuthDao {
   }
 
   async setAuth(alias: string, token: string, timestamp: number): Promise<void> {
-    console.log("Entering userDaoDynamo.setAuth()");
+    console.log("Entering authDaoDynamo.setAuth()");
     const params = {
       TableName: this.authTable,
       Item: {
@@ -29,7 +29,7 @@ export class AuthDaoDynamo implements AuthDao {
   }
 
   async getAuth(token: string): Promise<AuthToken | null> {
-    console.log("Entering userDaoDynamo.getAuth()");
+    console.log("Entering authDaoDynamo.getAuth()");
     const params = {
       TableName: this.authTable,
       Key: { [this.tokenAttr]: token },
@@ -39,7 +39,7 @@ export class AuthDaoDynamo implements AuthDao {
   }
 
   async updateAuth(token: string, time: number): Promise<void> {
-    console.log("Entering userDaoDynamo.updateAuth()");
+    console.log("Entering authDaoDynamo.updateAuth()");
     const params = {
       TableName: this.authTable,
       Key: { [this.tokenAttr]: token },
@@ -55,7 +55,7 @@ export class AuthDaoDynamo implements AuthDao {
   }
 
   async deleteAuth(token: string): Promise<void> {
-    console.log("Entering userDaoDynamo.deleteAuth()");
+    console.log("Entering authDaoDynamo.deleteAuth()");
     const params = {
       TableName: this.authTable,
       Key: { [this.tokenAttr]: token },
@@ -64,7 +64,7 @@ export class AuthDaoDynamo implements AuthDao {
   }
 
   async getAliasFromAuth(token: string): Promise<string | null> {
-    console.log("Entering userDaoDynamo.getAliasFromAuth()");
+    console.log("Entering authDaoDynamo.getAliasFromAuth()");
     const params = {
       TableName: this.authTable,
       Key: { [this.tokenAttr]: token },
