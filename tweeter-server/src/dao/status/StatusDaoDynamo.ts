@@ -79,6 +79,7 @@ export class StatusDaoDynamo implements StatusDao {
       },
       TableName: this.storyTableName,
       Limit: pageSize,
+      ScanIndexForward: false,
       ExclusiveStartKey:
         lastItem === null
           ? undefined
@@ -110,6 +111,7 @@ export class StatusDaoDynamo implements StatusDao {
       },
       TableName: this.feedTableName,
       Limit: pageSize,
+      ScanIndexForward: false,
       ExclusiveStartKey:
         lastItem === null
           ? undefined
