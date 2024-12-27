@@ -27,6 +27,14 @@ const MainLayout = () => {
           </div>
         </div>
       </div>
+      <footer>
+        <a href="https://parkershumard.com" target="_blank">
+          Parker Shumard
+        </a>
+        <a href="https://github.com/parksmojo/tweeter" target="_blank">
+          Github
+        </a>
+      </footer>
     </>
   );
 };
