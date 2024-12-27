@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "workspaces": [
     "tweeter-shared",
-    "tweeter-web"
+    "tweeter-web",
+    "tweeter-server"
   ],
-  "author": "JWilkerson",
+  "author": "Parker Shumard",
   "license": "ISC",
   "dependencies": {
     "rimraf": "^5.0.5",
